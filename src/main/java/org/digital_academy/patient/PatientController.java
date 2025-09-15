@@ -1,5 +1,5 @@
-package org.digital_academy.controller;
+package org.digital_academy.patient;
 
 public class PatientController {
-    
+
 }

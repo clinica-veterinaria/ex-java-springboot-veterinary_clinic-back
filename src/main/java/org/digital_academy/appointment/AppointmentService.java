@@ -1,5 +1,5 @@
-package org.digital_academy.service;
+package org.digital_academy.appointment;
 
 public class AppointmentService {
-    
+
 }

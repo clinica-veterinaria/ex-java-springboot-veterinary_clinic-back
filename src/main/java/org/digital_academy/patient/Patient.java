@@ -1,6 +1,5 @@
-package org.digital_academy.model;
+package org.digital_academy.patient;
 
 public class Patient {
-    
+
 }
-    

@@ -1,5 +1,5 @@
-package org.digital_academy.repository;
+package org.digital_academy.treatment;
 
 public class TreatmentRepository {
-    
+
 }
