@@ -1,5 +1,12 @@
 package org.digital_academy.patient;
 
-public class PatientRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
+@Repository
+public interface PatientRepository extends JpaRepository<Patient, Long> {
+
+    Optional<Patient> findByIdentificacion(String identificacion);
 }
