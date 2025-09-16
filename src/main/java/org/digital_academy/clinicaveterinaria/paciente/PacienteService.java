@@ -1,7 +1,5 @@
-package org.digital_academy.clinicaveterinaria.paciente.service;
+package org.digital_academy.clinicaveterinaria.paciente;
 
-import org.digital_academy.clinicaveterinaria.paciente.model.Paciente;
-import org.digital_academy.clinicaveterinaria.paciente.repository.PacienteRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

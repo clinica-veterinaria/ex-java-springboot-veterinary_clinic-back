@@ -1,7 +1,7 @@
-package org.digital_academy.clinicaveterinaria.paciente.mapper;
+package org.digital_academy.clinicaveterinaria.paciente;
 
-import org.digital_academy.clinicaveterinaria.paciente.dto.PacienteDTO;
-import org.digital_academy.clinicaveterinaria.paciente.model.Paciente;
+// Update the import to the correct package where PacienteDTO exists
+import org.digital_academy.clinicaveterinaria.paciente.PacienteDTO;
 import org.springframework.stereotype.Component;
 
 @Component

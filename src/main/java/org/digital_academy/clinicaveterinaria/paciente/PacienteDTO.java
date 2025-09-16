@@ -1,19 +1,13 @@
-package org.digital_academy.clinicaveterinaria.paciente.model;
+package org.digital_academy.clinicaveterinaria.paciente;
 
-import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Paciente {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class PacienteDTO {
     private Long id;
-
     private String nombre;
     private int edad;
     private String raza;
