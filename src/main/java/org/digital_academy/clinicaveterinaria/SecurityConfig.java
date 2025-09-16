@@ -13,7 +13,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Necesario para poder hacer POST/PUT/DELETE desde Postman
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/pacientes/**").permitAll() // ✅ ahora permite GET/POST/PUT/DELETE en todos los subpaths
+                .requestMatchers("/", "/patients/**").permitAll() // ✅ ahora permite GET/POST/PUT/DELETE en todos los subpaths
                 .anyRequest().authenticated()
             );
 

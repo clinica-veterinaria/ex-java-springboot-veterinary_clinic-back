@@ -8,7 +8,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class HomeController {
 
     @GetMapping("/")
-    public RedirectView redirectToPacientes() {
-        return new RedirectView("/pacientes"); // o "/api/pacientes"
+    public RedirectView redirectTopatients() {
+        return new RedirectView("/patients"); // o "/api/patients"
     }
 }
