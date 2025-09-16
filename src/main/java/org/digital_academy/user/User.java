@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "usuarios") 
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,6 +16,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String nombre; 
+
+    @Column(unique = true)
+    private String dni; 
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -24,4 +30,8 @@ public class User {
 
     @Column(nullable = false)
     private String role;
+
+    @Lob
+    @Column(name = "image")
+    private byte[] image; 
 }
