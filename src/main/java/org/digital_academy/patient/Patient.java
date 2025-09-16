@@ -31,6 +31,16 @@ public class Patient {
     @Column(nullable = false, unique = true)
     private String identificacion;
 
+    @Column(nullable = false)
+    private String tutorNombre;
+
+    @Column(nullable = false)
+    private String tutorTelefono;
+
+    @Lob
+    @Column(name = "image")
+    private byte[] image; 
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appointment> appointments;
 }
