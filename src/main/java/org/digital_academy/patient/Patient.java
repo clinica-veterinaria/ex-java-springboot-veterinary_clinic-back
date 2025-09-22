@@ -19,27 +19,30 @@ public class Patient {
     private Long id;
 
     @Column(nullable = false)
-    private String nombre;
+    private String name;
 
     @Column(nullable = false)
-    private Integer edad;
+    private Integer age;
 
-    private String raza;
+    private String breed;
 
-    private String genero;
+    private String gender;
 
     @Column(nullable = false, unique = true)
-    private String identificacion;
+    private String identification;
+    
+    @Column(nullable = false)
+    private String tutorName;
 
     @Column(nullable = false)
-    private String tutorNombre;
+    private String tutorPhone;
 
-    @Column(nullable = false)
-    private String tutorTelefono;
+    @Column(nullable = false, unique = true)
+    private String tutorEmail;
 
     @Lob
     @Column(name = "image")
-    private byte[] image; 
+    private byte[] image;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appointment> appointments;
