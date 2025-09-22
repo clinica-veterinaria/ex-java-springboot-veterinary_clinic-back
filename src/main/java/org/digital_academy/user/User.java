@@ -17,7 +17,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String nombre; 
+    private String name; 
 
     @Column(unique = true)
     private String dni; 
