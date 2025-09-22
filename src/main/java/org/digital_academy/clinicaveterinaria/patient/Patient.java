@@ -12,15 +12,14 @@ public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
+    private String name;
+    private int age;
+    private String breed;
+    private String gender;
+    private String ownerDNI;
 
-    private String nombre;
-    private int edad;
-    private String raza;
-    private String genero;
-    private String numeroIdentificacion;
-
-    private String nombreTutor;
-    private String apellidosTutor;
-    private String telefonoTutor;
+    private String ownerName;
+    private String phone;
 }

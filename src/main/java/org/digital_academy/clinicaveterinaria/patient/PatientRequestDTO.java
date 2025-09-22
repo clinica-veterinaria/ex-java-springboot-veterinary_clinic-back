@@ -6,14 +6,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PatientDTO {
-    private Long id;
+public class PatientRequestDTO {
     private String name;
     private int age;
     private String breed;
     private String gender;
     private String ownerDNI;
-
     private String ownerName;
     private String phone;
 }

@@ -1,40 +1,70 @@
 package org.digital_academy.clinicaveterinaria.patient;
 
-import org.digital_academy.clinicaveterinaria.patient.PatientDTO;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PatientMapper {
 
+    // 🔹 Entity -> ResponseDTO
+    public PatientResponseDTO toResponseDTO(Patient patient) {
+        if (patient == null) return null;
+
+        return PatientResponseDTO.builder()
+                .id(patient.getId())
+                .name(patient.getName())
+                .age(patient.getAge())
+                .breed(patient.getBreed())
+                .gender(patient.getGender())
+                .ownerDNI(patient.getOwnerDNI())
+                .ownerName(patient.getOwnerName())
+                .phone(patient.getPhone())
+                .build();
+    }
+
+    // 🔹 RequestDTO -> Entity
+    public Patient toEntity(PatientRequestDTO requestDTO) {
+        if (requestDTO == null) return null;
+
+        return Patient.builder()
+                .name(requestDTO.getName())
+                .age(requestDTO.getAge())
+                .breed(requestDTO.getBreed())
+                .gender(requestDTO.getGender())
+                .ownerDNI(requestDTO.getOwnerDNI())
+                .ownerName(requestDTO.getOwnerName())
+                .phone(requestDTO.getPhone())
+                .build();
+    }
+
+    // (Opcional) Entity -> DTO genérico (si lo quieres mantener)
     public PatientDTO toDTO(Patient patient) {
         if (patient == null) return null;
 
         return PatientDTO.builder()
                 .id(patient.getId())
-                .nombre(patient.getNombre())
-                .edad(patient.getEdad())
-                .raza(patient.getRaza())
-                .genero(patient.getGenero())
-                .numeroIdentificacion(patient.getNumeroIdentificacion())
-                .nombreTutor(patient.getNombreTutor())
-                .apellidosTutor(patient.getApellidosTutor())
-                .telefonoTutor(patient.getTelefonoTutor())
+                .name(patient.getName())
+                .age(patient.getAge())
+                .breed(patient.getBreed())
+                .gender(patient.getGender())
+                .ownerDNI(patient.getOwnerDNI())
+                .ownerName(patient.getOwnerName())
+                .phone(patient.getPhone())
                 .build();
     }
 
+    // (Opcional) DTO -> Entity
     public Patient toEntity(PatientDTO dto) {
         if (dto == null) return null;
 
         return Patient.builder()
                 .id(dto.getId())
-                .nombre(dto.getNombre())
-                .edad(dto.getEdad())
-                .raza(dto.getRaza())
-                .genero(dto.getGenero())
-                .numeroIdentificacion(dto.getNumeroIdentificacion())
-                .nombreTutor(dto.getNombreTutor())
-                .apellidosTutor(dto.getApellidosTutor())
-                .telefonoTutor(dto.getTelefonoTutor())
+                .name(dto.getName())
+                .age(dto.getAge())
+                .breed(dto.getBreed())
+                .gender(dto.getGender())
+                .ownerDNI(dto.getOwnerDNI())
+                .ownerName(dto.getOwnerName())
+                .phone(dto.getPhone())
                 .build();
     }
 }

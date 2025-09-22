@@ -7,50 +7,41 @@ import java.util.List;
 @RequestMapping("/patients")
 public class PatientController {
 
-    private final PatientRepository patientRepository;
+    private final PatientService patientService;
 
-    public PatientController(PatientRepository patientRepository) {
-        this.patientRepository = patientRepository;
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
     }
 
-    // GET -> Listar todos los patients
+    // ✅ GET -> Listar todos los pacientes
     @GetMapping
-    public List<Patient> listarpatients() {
-        return patientRepository.findAll();
+    public List<PatientResponseDTO> listarPatients() {
+        return patientService.listarPatients();
     }
 
-    // POST -> Crear un nuevo patient
+    // ✅ POST -> Crear un nuevo paciente
     @PostMapping
-    public Patient crearpatient(@RequestBody Patient patient) {
-        return patientRepository.save(patient);
+    public PatientResponseDTO crearPatient(@RequestBody PatientRequestDTO requestDTO) {
+        return patientService.guardarPatient(requestDTO);
     }
 
-    // GET -> Obtener un patient por id
+    // ✅ GET -> Obtener un paciente por id
     @GetMapping("/{id}")
-    public Patient obtenerpatient(@PathVariable Long id) {
-        return patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("patient no encontrado con id " + id));
+    public PatientResponseDTO obtenerPatient(@PathVariable Long id) {
+        return patientService.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Patient no encontrado con id " + id));
     }
 
-    // PUT -> Actualizar un patient existente
+    // ✅ PUT -> Actualizar un paciente existente
     @PutMapping("/{id}")
-    public Patient actualizarpatient(@PathVariable Long id, @RequestBody Patient patientActualizado) {
-        return patientRepository.findById(id).map(patient -> {
-            patient.setNombre(patientActualizado.getNombre());
-            patient.setRaza(patientActualizado.getRaza());
-            patient.setGenero(patientActualizado.getGenero());
-            patient.setEdad(patientActualizado.getEdad());
-            patient.setNumeroIdentificacion(patientActualizado.getNumeroIdentificacion());
-            patient.setNombreTutor(patientActualizado.getNombreTutor());
-            patient.setApellidosTutor(patientActualizado.getApellidosTutor());
-            patient.setTelefonoTutor(patientActualizado.getTelefonoTutor());
-            return patientRepository.save(patient);
-        }).orElseThrow(() -> new RuntimeException("patient no encontrado con id " + id));
+    public PatientResponseDTO actualizarPatient(@PathVariable Long id, @RequestBody PatientRequestDTO requestDTO) {
+        return patientService.actualizarPatient(id, requestDTO)
+                .orElseThrow(() -> new RuntimeException("Patient no encontrado con id " + id));
     }
 
-    // DELETE -> Eliminar un patient
+    // ✅ DELETE -> Eliminar un paciente
     @DeleteMapping("/{id}")
-    public void eliminarpatient(@PathVariable Long id) {
-        patientRepository.deleteById(id);
+    public void eliminarPatient(@PathVariable Long id) {
+        patientService.eliminarPatient(id);
     }
 }
