@@ -1,59 +1,60 @@
 -- =========================================
--- TABLA USUARIOS
+-- TABLE USERS
 -- =========================================
-CREATE TABLE IF NOT EXISTS usuarios (
+CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     dni VARCHAR(20) UNIQUE, 
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    rol VARCHAR(50) NOT NULL,
+    role VARCHAR(50) NOT NULL,
     image BLOB 
 );
 
 -- =========================================
--- TABLA PACIENTES
+-- TABLE PATIENTS
 -- =========================================
-CREATE TABLE IF NOT EXISTS pacientes (
+CREATE TABLE IF NOT EXISTS patients (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    edad INT NOT NULL,
-    raza VARCHAR(100),
-    genero ENUM('MACHO','HEMBRA') NOT NULL,
-    identificacion VARCHAR(50) UNIQUE NOT NULL,
-    tutor_nombre VARCHAR(150) NOT NULL,
-    tutor_telefono VARCHAR(20) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    age INT NOT NULL,
+    breed VARCHAR(100),
+    gender ENUM('MALE','FEMALE') NOT NULL,
+    identification VARCHAR(50) UNIQUE NOT NULL,
+    tutor_name VARCHAR(150) NOT NULL,
+    tutor_phone VARCHAR(20) NOT NULL,
+    tutor_email VARCHAR(150) UNIQUE NOT NULL,
     image LONGBLOB
 );
+
 -- =========================================
--- TABLA CITAS
+-- TABLE APPOINTMENTS
 -- =========================================
-CREATE TABLE IF NOT EXISTS citas (
+CREATE TABLE IF NOT EXISTS appointments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    fecha_hora DATETIME NOT NULL,
-    paciente_id BIGINT NOT NULL,
-    consulta ENUM('ESTANDAR','URGENCIA') NOT NULL,
-    motivo VARCHAR(255),
-    estado ENUM('PENDIENTE','ATENDIDA','PASADA') DEFAULT 'PENDIENTE',
-    CONSTRAINT fk_cita_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE
+    appointment_datetime DATETIME NOT NULL,
+    patient_id BIGINT NOT NULL,
+    type ENUM('STANDARD','URGENT') NOT NULL,
+    reason VARCHAR(255),
+    status ENUM('PENDING','ATTENDED','PAST') DEFAULT 'PENDING',
+    CONSTRAINT fk_appointment_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
 );
 
 -- =========================================
--- TABLA TRATAMIENTOS
+-- TABLE TREATMENTS
 -- =========================================
-
-CREATE TABLE IF NOT EXISTS tratamientos (
+CREATE TABLE IF NOT EXISTS treatments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    paciente_id BIGINT NOT NULL,
-    tratamiento VARCHAR(255) NOT NULL,
-    fecha_tratamiento DATETIME NOT NULL,
-    CONSTRAINT fk_tratamiento_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE
+    patient_id BIGINT NOT NULL,
+    treatment VARCHAR(255) NOT NULL,
+    treatment_date DATETIME NOT NULL,
+    CONSTRAINT fk_treatment_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
 );
 
 -- =========================================
--- ÍNDICES
+-- INDEXES
 -- =========================================
-CREATE INDEX idx_pacientes_identificacion ON pacientes (identificacion);
-CREATE INDEX idx_pacientes_tutor ON pacientes (tutor_nombre);
-CREATE INDEX idx_citas_fecha_hora ON citas (fecha_hora);
-CREATE INDEX idx_usuarios_email ON usuarios (email);
+CREATE INDEX idx_patients_identification ON patients (identification);
+CREATE INDEX idx_patients_tutor_name ON patients (tutor_name);
+CREATE INDEX idx_appointments_datetime ON appointments (appointment_datetime);
+CREATE INDEX idx_users_email ON users (email);
