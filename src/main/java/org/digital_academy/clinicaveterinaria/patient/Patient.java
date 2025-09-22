@@ -1,7 +1,7 @@
 package org.digital_academy.clinicaveterinaria.patient;
 
 import jakarta.persistence.*;
-import java.util.Objects;
+
 
 @Entity
 public class Patient {

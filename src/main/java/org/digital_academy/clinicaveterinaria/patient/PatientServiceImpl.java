@@ -4,9 +4,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.digital_academy.clinicaveterinaria.implementation.IPatientService;
 
 @Service
-public class PatientServiceImpl implements PatientService {
+public class PatientServiceImpl implements IPatientService <PatientResponseDTO, PatientRequestDTO> {
 
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
@@ -58,15 +59,26 @@ public class PatientServiceImpl implements PatientService {
         patientRepository.deleteById(id);
     }
 
+   
+    
+
     @Override
-    public Optional<PatientResponseDTO> buscarPorPhone(String phone) {
-        return patientRepository.findByPhone(phone)
+    public Optional<PatientResponseDTO> buscarPorOwnerDNI(String dniPropietario) {
+        return patientRepository.findByOwnerDNI(dniPropietario)
                 .map(patientMapper::toResponseDTO);
     }
 
     @Override
-    public Optional<PatientResponseDTO> buscarPorOwnerDNI(String ownerDNI) {
-        return patientRepository.findByOwnerDNI(ownerDNI)
+    public Optional<PatientResponseDTO> buscarPorCampo(String campo) {
+        // Example: search by name as a generic field
+        return patientRepository.findByName(campo)
                 .map(patientMapper::toResponseDTO);
     }
+
+    @Override
+    public Optional<PatientResponseDTO> buscarPorTelefono(String telefono) {
+        return patientRepository.findByPhone(telefono)
+                .map(patientMapper::toResponseDTO);
+    }
+
 }

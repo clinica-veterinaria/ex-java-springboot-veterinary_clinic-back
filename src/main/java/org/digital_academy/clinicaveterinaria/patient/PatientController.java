@@ -2,14 +2,15 @@ package org.digital_academy.clinicaveterinaria.patient;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.digital_academy.clinicaveterinaria.implementation.IPatientService;
 
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
 
-    private final PatientService patientService;
+    private final IPatientService<PatientResponseDTO, PatientRequestDTO> patientService;
 
-    public PatientController(PatientService patientService) {
+    public PatientController(IPatientService<PatientResponseDTO, PatientRequestDTO> patientService) {
         this.patientService = patientService;
     }
 

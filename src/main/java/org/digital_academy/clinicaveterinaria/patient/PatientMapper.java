@@ -36,35 +36,5 @@ public class PatientMapper {
                 .build();
     }
 
-    // (Opcional) Entity -> DTO genérico (si lo quieres mantener)
-    public PatientDTO toDTO(Patient patient) {
-        if (patient == null) return null;
-
-        return PatientDTO.builder()
-                .id(patient.getId())
-                .name(patient.getName())
-                .age(patient.getAge())
-                .breed(patient.getBreed())
-                .gender(patient.getGender())
-                .ownerDNI(patient.getOwnerDNI())
-                .ownerName(patient.getOwnerName())
-                .phone(patient.getPhone())
-                .build();
-    }
-
-    // (Opcional) DTO -> Entity
-    public Patient toEntity(PatientDTO dto) {
-        if (dto == null) return null;
-
-        return Patient.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .age(dto.getAge())
-                .breed(dto.getBreed())
-                .gender(dto.getGender())
-                .ownerDNI(dto.getOwnerDNI())
-                .ownerName(dto.getOwnerName())
-                .phone(dto.getPhone())
-                .build();
-    }
+    
 }
