@@ -19,16 +19,17 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private LocalDateTime fechaHora;
+    @Column(name = "appointmentDatetime", nullable = false)
+    private LocalDateTime appointmentDatetime;
 
-    @Column(nullable = false)
-    private String tipo;
+    @Column(name = "type", nullable = false)
+    private String type;
 
-    private String motivo;
+    @Column(name = "reason")
+    private String reason;
 
-    @Column(nullable = false)
-    private String estado;
+    @Column(name = "status", nullable = false)
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
