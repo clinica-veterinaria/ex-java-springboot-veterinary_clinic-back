@@ -49,6 +49,7 @@ public class PatientServiceImpl implements IPatientService <PatientResponseDTO, 
                     existing.setOwnerDNI(requestDTO.getOwnerDNI());
                     existing.setOwnerName(requestDTO.getOwnerName());
                     existing.setPhone(requestDTO.getPhone());
+                    existing.setEmail(requestDTO.getEmail());
                     Patient updated = patientRepository.save(existing);
                     return patientMapper.toResponseDTO(updated);
                 });

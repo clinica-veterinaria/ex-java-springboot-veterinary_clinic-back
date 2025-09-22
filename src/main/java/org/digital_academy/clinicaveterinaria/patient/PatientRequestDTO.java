@@ -8,10 +8,11 @@ import lombok.*;
 @Builder
 public class PatientRequestDTO {
     private String name;
-    private int age;
-    private String breed;
     private String gender;
-    private String ownerDNI;
+    private String breed;
+    private String age;
     private String ownerName;
+    private String ownerDNI;
     private String phone;
+    private String email;
 }

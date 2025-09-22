@@ -12,6 +12,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Necesario para poder hacer POST/PUT/DELETE desde Postman
+            .cors(cors -> {})
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/patients/**").permitAll() // ✅ ahora permite GET/POST/PUT/DELETE en todos los subpaths
                 .anyRequest().authenticated()

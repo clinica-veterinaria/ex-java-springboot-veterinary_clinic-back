@@ -9,7 +9,7 @@ import lombok.*;
 public class PatientResponseDTO {
     private Long id;       // 👈 Incluimos el id generado
     private String name;
-    private int age;
+    private String age;
     private String breed;
     private String gender;
     private String ownerDNI;

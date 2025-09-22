@@ -9,21 +9,37 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
+    @Column(nullable = false)
     private String name;
-    private int age;
-    private String breed;
+    
+    @Column(nullable = false)
     private String gender;
-    private String ownerDNI;
+    
+    @Column(nullable = false)
+    private String breed;
+    
+    @Column(nullable = false)
+    private String age;
+    
+    @Column(nullable = false)
     private String ownerName;
+    
+    @Column(nullable = false, unique = true)
+    private String ownerDNI;
+    
+    @Column(nullable = false)
     private String phone;
+    
+    @Column
+    private String email;
 
     // Constructor vacío
     public Patient() {
     }
 
     // Constructor con todos los campos (excepto id)
-    public Patient(String name, int age, String breed, String gender, String ownerDNI, String ownerName, String phone) {
+    public Patient(String name, String age, String breed, String gender, String ownerDNI, String ownerName, String phone, String email) {
         this.name = name;
         this.age = age;
         this.breed = breed;
@@ -31,10 +47,11 @@ public class Patient {
         this.ownerDNI = ownerDNI;
         this.ownerName = ownerName;
         this.phone = phone;
+        this.email = email;
     }
 
     // Constructor con todos los campos incluyendo id
-    public Patient(Long id, String name, int age, String breed, String gender, String ownerDNI, String ownerName, String phone) {
+    public Patient(Long id, String name, String age, String breed, String gender, String ownerDNI, String ownerName, String phone, String email) {
         this.id = id;
         this.name = name;
         this.age = age;
@@ -43,6 +60,7 @@ public class Patient {
         this.ownerDNI = ownerDNI;
         this.ownerName = ownerName;
         this.phone = phone;
+        this.email = email;
     }
 
     // Getters y Setters
@@ -62,11 +80,11 @@ public class Patient {
         this.name = name;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
@@ -110,6 +128,15 @@ public class Patient {
         this.phone = phone;
     }
 
+    
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     // Builder manual
     public static PatientBuilder builder() {
         return new PatientBuilder();
@@ -118,12 +145,13 @@ public class Patient {
     public static class PatientBuilder {
         private Long id;
         private String name;
-        private int age;
+        private String age;
         private String breed;
         private String gender;
         private String ownerDNI;
         private String ownerName;
         private String phone;
+        private String email;
 
         public PatientBuilder id(Long id) {
             this.id = id;
@@ -135,7 +163,7 @@ public class Patient {
             return this;
         }
 
-        public PatientBuilder age(int age) {
+        public PatientBuilder age(String age) {
             this.age = age;
             return this;
         }
@@ -165,8 +193,14 @@ public class Patient {
             return this;
         }
 
+        public PatientBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
         public Patient build() {
-            return new Patient(id, name, age, breed, gender, ownerDNI, ownerName, phone);
+            return new Patient(id, name, age, breed, gender, ownerDNI, ownerName, phone, email);
         }
     }
+
 }
