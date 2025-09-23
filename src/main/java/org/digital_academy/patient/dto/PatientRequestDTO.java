@@ -1,10 +1,13 @@
 package org.digital_academy.patient.dto;
+
 import lombok.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PatientRequestDTO {
+
     private String name;
     private Integer age;
     private String breed;

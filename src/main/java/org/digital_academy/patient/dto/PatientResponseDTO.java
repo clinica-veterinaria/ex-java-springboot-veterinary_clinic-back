@@ -1,10 +1,13 @@
 package org.digital_academy.patient.dto;
+
 import lombok.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PatientResponseDTO {
+
     private Long id;
     private String name;
     private Integer age;
