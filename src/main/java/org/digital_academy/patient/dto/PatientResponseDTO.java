@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class PatientResponseDTO {
-    private Long id;       // 👈 Incluimos el id generado
+    private Long id;       
     private String name;
     private int age;
     private String breed;

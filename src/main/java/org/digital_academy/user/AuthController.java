@@ -26,7 +26,7 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
-    // ✅ Registro de nuevos usuarios
+    
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -39,15 +39,15 @@ public class AuthController {
 
         UserEntity user = new UserEntity();
         user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword())); // 🔐 encriptada
-        user.setRoles(Collections.singleton(request.getRole())); // 👈 rol que mandes en el JSON
+        user.setPassword(passwordEncoder.encode(request.getPassword())); 
+        user.setRoles(Collections.singleton(request.getRole())); 
 
         userRepository.save(user);
 
         return ResponseEntity.ok("✅ Usuario registrado con éxito");
     }
 
-    // ✅ Login con validación real
+    
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {

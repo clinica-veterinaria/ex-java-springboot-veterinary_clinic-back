@@ -72,7 +72,7 @@ public class PatientServiceImpl implements IPatientService <PatientResponseDTO, 
 
     @Override
     public Optional<PatientResponseDTO> buscarPorCampo(String campo) {
-        // Example: search by name as a generic field
+        
         return patientRepository.findByName(campo)
                 .map(patientMapper::toResponseDTO);
     }

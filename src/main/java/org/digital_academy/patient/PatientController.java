@@ -18,21 +18,21 @@ public class PatientController {
         this.patientService = patientService;
     }
 
-    // ✅ GET -> Listar todos los pacientes (solo ADMIN)
+    
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public List<PatientResponseDTO> listarPatients() {
         return patientService.listarPatients();
     }
 
-    // ✅ POST -> Crear un nuevo paciente (solo ADMIN y USER)
+    
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PostMapping
     public PatientResponseDTO crearPatient(@RequestBody PatientRequestDTO requestDTO) {
         return patientService.guardarPatient(requestDTO);
     }
 
-    // ✅ GET -> Obtener un paciente por id (solo ADMIN)
+    
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{id}")
     public PatientResponseDTO obtenerPatient(@PathVariable Long id) {
@@ -40,7 +40,7 @@ public class PatientController {
                 .orElseThrow(() -> new RuntimeException("Patient no encontrado con id " + id));
     }
 
-    // ✅ PUT -> Actualizar un paciente (solo ADMIN)
+    
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
     public PatientResponseDTO actualizarPatient(@PathVariable Long id, @RequestBody PatientRequestDTO requestDTO) {
@@ -48,7 +48,7 @@ public class PatientController {
                 .orElseThrow(() -> new RuntimeException("Patient no encontrado con id " + id));
     }
 
-    // ✅ DELETE -> Eliminar un paciente (solo ADMIN)
+    
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void eliminarPatient(@PathVariable Long id) {

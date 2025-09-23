@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PatientMapper {
 
-    // 🔹 Entity -> ResponseDTO
+    
     public PatientResponseDTO toResponseDTO(Patient patient) {
         if (patient == null) return null;
 
@@ -23,7 +23,7 @@ public class PatientMapper {
                 .build();
     }
 
-    // 🔹 RequestDTO -> Entity
+    
     public Patient toEntity(PatientRequestDTO requestDTO) {
         if (requestDTO == null) return null;
 

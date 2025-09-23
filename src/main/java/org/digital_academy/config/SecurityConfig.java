@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableMethodSecurity // habilita @PreAuthorize
+@EnableMethodSecurity 
 public class SecurityConfig {
 
     @Bean
@@ -19,24 +19,23 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/error").permitAll() // login y registro públicos
-                .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER") // solo usuarios autenticados
+                .requestMatchers("/auth/**", "/error").permitAll() 
+                .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER") 
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form.disable()) // desactiva login de formulario de Spring
+            .formLogin(form -> form.disable()) 
             .logout(logout -> logout.permitAll());
 
         return http.build();
     }
 
-    // ✅ AuthenticationManager para que el AuthController valide login
+   
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // ✅ PasswordEncoder (BCrypt)
-    @Bean
+    
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

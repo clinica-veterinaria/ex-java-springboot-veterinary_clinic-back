@@ -9,6 +9,6 @@ public class HomeController {
 
     @GetMapping("/")
     public RedirectView redirectTopatients() {
-        return new RedirectView("/patients"); // o "/api/patients"
+        return new RedirectView("/patients"); 
     }
 }

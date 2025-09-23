@@ -18,11 +18,11 @@ public class Patient {
     private String ownerName;
     private String phone;
 
-    // Constructor vacío
+    
     public Patient() {
     }
 
-    // Constructor con todos los campos (excepto id)
+    
     public Patient(String name, int age, String breed, String gender, String ownerDNI, String ownerName, String phone) {
         this.name = name;
         this.age = age;
@@ -33,7 +33,7 @@ public class Patient {
         this.phone = phone;
     }
 
-    // Constructor con todos los campos incluyendo id
+    
     public Patient(Long id, String name, int age, String breed, String gender, String ownerDNI, String ownerName, String phone) {
         this.id = id;
         this.name = name;
@@ -45,7 +45,7 @@ public class Patient {
         this.phone = phone;
     }
 
-    // Getters y Setters
+    
     public Long getId() {
         return id;
     }
@@ -110,7 +110,7 @@ public class Patient {
         this.phone = phone;
     }
 
-    // Builder manual
+    
     public static PatientBuilder builder() {
         return new PatientBuilder();
     }

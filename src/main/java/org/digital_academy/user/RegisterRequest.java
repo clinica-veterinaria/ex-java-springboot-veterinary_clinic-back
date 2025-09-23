@@ -9,5 +9,5 @@ import lombok.*;
 public class RegisterRequest {
     private String username;
     private String password;
-    private String role; // "ADMIN" o "USER"
+    private String role; 
 }
