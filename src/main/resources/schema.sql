@@ -20,8 +20,9 @@ CREATE TABLE IF NOT EXISTS patients (
     age INT NOT NULL,
     breed VARCHAR(100),
     gender ENUM('MALE','FEMALE') NOT NULL,
-    identification VARCHAR(50) UNIQUE NOT NULL,
+    pet_identification VARCHAR(50) UNIQUE NOT NULL,
     tutor_name VARCHAR(150) NOT NULL,
+    tutor_dni VARCHAR(50) UNIQUE NOT NULL,
     tutor_phone VARCHAR(20) NOT NULL,
     tutor_email VARCHAR(150) UNIQUE NOT NULL,
     image LONGBLOB
@@ -54,7 +55,8 @@ CREATE TABLE IF NOT EXISTS treatments (
 -- =========================================
 -- INDEXES
 -- =========================================
-CREATE INDEX idx_patients_identification ON patients (identification);
+CREATE INDEX idx_patients_pet_identification ON patients (pet_identification);
 CREATE INDEX idx_patients_tutor_name ON patients (tutor_name);
+CREATE INDEX idx_patients_tutor_dni ON patients (tutor_dni);
 CREATE INDEX idx_appointments_datetime ON appointments (appointment_datetime);
 CREATE INDEX idx_users_email ON users (email);

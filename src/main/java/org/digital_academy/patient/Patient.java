@@ -29,10 +29,13 @@ public class Patient {
     private String gender;
 
     @Column(nullable = false, unique = true)
-    private String identification;
-    
+    private String petIdentification;
+
     @Column(nullable = false)
     private String tutorName;
+
+    @Column(nullable = false, unique = true)
+    private String tutorDni;
 
     @Column(nullable = false)
     private String tutorPhone;
