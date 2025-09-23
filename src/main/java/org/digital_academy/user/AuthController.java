@@ -37,7 +37,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("⚠️ La contraseña no puede ser vacía");
         }
 
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword())); 
         user.setRoles(Collections.singleton(request.getRole())); 
