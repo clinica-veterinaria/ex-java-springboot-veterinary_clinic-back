@@ -1,4 +1,4 @@
-package org.digital_academy.clinicaveterinaria.config;
+package org.digital_academy.clinicaveterinaria.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

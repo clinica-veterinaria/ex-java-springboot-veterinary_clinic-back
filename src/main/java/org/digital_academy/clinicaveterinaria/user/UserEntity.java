@@ -1,4 +1,4 @@
-package org.digital_academy.clinicaveterinaria.config;
+package org.digital_academy.clinicaveterinaria.user;
 
 import jakarta.persistence.*;
 
@@ -22,7 +22,7 @@ public class UserEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
-    private Set<String> roles; // 👈 ["ADMIN", "VETERINARIO", "RECEPCIONISTA"]    private Set<String> roles; // 👈 ["ADMIN", "VETERINARIO", "RECEPCIONISTA"]
+    private Set<String> roles; // 👈 ["ADMIN", "USER", "RECEPCIONISTA"]    private Set<String> roles; // 👈 ["ADMIN", "USER", "RECEPCIONISTA"]
 
     public UserEntity() {
     }
