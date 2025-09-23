@@ -1,10 +1,9 @@
 package org.digital_academy.clinicaveterinaria.auth;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,15 +11,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "${api.endpoint}")
 public class AuthController {
 
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+        return authService.register(request);
+    }
+
     @GetMapping("/login")
     public ResponseEntity<AuthDTOResponse> login() {
-
-        SecurityContext contextHolder = SecurityContextHolder.getContext();
-        Authentication auth = contextHolder.getAuthentication();
-
-        AuthDTOResponse authResponse = new AuthDTOResponse("Logged", auth.getName(),
-                auth.getAuthorities().iterator().next().getAuthority());
-
-        return ResponseEntity.accepted().body(authResponse);
+        return authService.login();
     }
 }

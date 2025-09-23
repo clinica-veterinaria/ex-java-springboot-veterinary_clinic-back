@@ -15,24 +15,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-        @Value("${api-endpoint}")
+        @Value("${api.endpoint}")
         String endpoint;
 
         private final JpaUserDetailService userDetailService;
 
         public SecurityConfig(JpaUserDetailService userDetailService) {
                 this.userDetailService = userDetailService;
-        }
-
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
         }
 
         @Bean
@@ -53,7 +46,7 @@ public class SecurityConfig {
                                                 .requestMatchers("h2-console/**").permitAll()
                                                 .requestMatchers("/public").permitAll()
                                                 .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
-                                                .requestMatchers(endpoint + "/login").hasAnyRole("USER", "ADMIN")
+                                                .requestMatchers(HttpMethod.GET, endpoint + "/login").permitAll()
                                                 .anyRequest().authenticated())
                                 .userDetailsService(userDetailService)
                                 .httpBasic(withDefaults())
