@@ -1,7 +1,6 @@
 -- =========================================
 -- ADMIN USER (BCrypt password)
 -- =========================================
--- Plain password: admin123
 INSERT INTO users (name, dni, email, password, role, image)
 VALUES ('Administrator', '12345678Z', 'admin@olivia.com',
         '$2a$10$5vt5wq02vQZExo8WwIhD2e5UAnL9qONhxjWDwHFOuo4FzY9Hdf.9C', -- BCrypt of 'admin123'

@@ -12,50 +12,38 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.Customizer;
 
 @Configuration
-@EnableMethodSecurity 
-
-
-
-
+@EnableMethodSecurity
 public class SecurityConfig {
 
+    // Bean para codificar contraseñas, necesario para AuthController
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/error").permitAll() 
-                .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER") 
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form.disable()) 
-            .logout(logout -> logout.permitAll());
-
-        return http.build();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
-   
+    // Bean de AuthenticationManager para autenticación manual si es necesario
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
+    // Configuración de seguridad unificada
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desactiva CSRF para pruebas y Swagger
+            .csrf(csrf -> csrf.disable()) // Desactiva CSRF (útil para Swagger y pruebas)
             .authorizeHttpRequests(auth -> auth
-                // Permitimos acceso libre a appointments y Swagger
-                .requestMatchers("/appointments/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // Rutas públicas
+                .requestMatchers("/auth/**", "/error", "/appointments/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // Rutas protegidas
+                .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
                 // Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated()
             )
-            .httpBasic(Customizer.withDefaults()); // permite autenticación básica para pruebas
+            .formLogin(form -> form.disable()) // Desactiva formulario de login por defecto
+            .httpBasic(Customizer.withDefaults()) // Permite autenticación básica
+            .logout(logout -> logout.permitAll());
+
         return http.build();
     }
 }
