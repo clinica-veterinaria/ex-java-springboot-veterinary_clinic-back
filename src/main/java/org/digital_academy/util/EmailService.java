@@ -4,6 +4,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -51,7 +53,7 @@ public class EmailService {
     }
 
     private void sendEmail(String toEmail, String subject, String templateName,
-                           String tutorName, String petName, LocalDateTime fechaHora) throws MessagingException {
+            String tutorName, String petName, LocalDateTime fechaHora) throws MessagingException {
 
         Context context = new Context();
         context.setVariable("tutorName", tutorName);
@@ -67,6 +69,9 @@ public class EmailService {
         helper.setTo(toEmail);
         helper.setSubject(subject);
         helper.setText(htmlContent, true);
+
+        ClassPathResource image = new ClassPathResource("static/assets/imgs/Oliwa_LOGO.png");
+        helper.addInline("logoImage", image);
 
         mailSender.send(message);
     }
