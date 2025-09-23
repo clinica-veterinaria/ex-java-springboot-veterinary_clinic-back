@@ -1,3 +1,4 @@
+package org.digital_academy.user;
 // package org.digital_academy.clinicaveterinaria.user;
 
 // import org.springframework.context.annotation.Bean;

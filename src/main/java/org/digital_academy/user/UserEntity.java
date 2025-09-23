@@ -1,4 +1,4 @@
-package org.digital_academy.clinicaveterinaria.user;
+package org.digital_academy.user;
 
 import jakarta.persistence.*;
 

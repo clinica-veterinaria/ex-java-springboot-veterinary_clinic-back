@@ -1,4 +1,4 @@
-package org.digital_academy.clinicaveterinaria.patient;
+package org.digital_academy.patient;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;

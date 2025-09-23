@@ -1,4 +1,4 @@
-package org.digital_academy.clinicaveterinaria.config;
+package org.digital_academy.config;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,4 +1,4 @@
-package org.digital_academy.clinicaveterinaria.user;
+package org.digital_academy.user;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

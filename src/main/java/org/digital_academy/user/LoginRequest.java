@@ -1,4 +1,4 @@
-package org.digital_academy.clinicaveterinaria.user;
+package org.digital_academy.user;
 
 import lombok.*;
 
@@ -6,8 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RegisterRequest {
+public class LoginRequest {
     private String username;
     private String password;
-    private String role; // "ADMIN" o "USER"
 }

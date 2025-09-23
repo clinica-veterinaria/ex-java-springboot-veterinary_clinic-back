@@ -1,10 +1,10 @@
-package org.digital_academy.clinicaveterinaria.patient;
+package org.digital_academy.patient;
 
+import org.digital_academy.implementation.IPatientService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.digital_academy.clinicaveterinaria.implementation.IPatientService;
 
 @Service
 public class PatientServiceImpl implements IPatientService <PatientResponseDTO, PatientRequestDTO> {

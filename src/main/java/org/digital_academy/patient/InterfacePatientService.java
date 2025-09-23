@@ -1,4 +1,4 @@
-package org.digital_academy.clinicaveterinaria.patient;
+package org.digital_academy.patient;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,8 +1,9 @@
-package org.digital_academy.clinicaveterinaria.patient;
+package org.digital_academy.patient;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import org.digital_academy.clinicaveterinaria.implementation.IPatientService;
+
+import org.digital_academy.implementation.IPatientService;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
