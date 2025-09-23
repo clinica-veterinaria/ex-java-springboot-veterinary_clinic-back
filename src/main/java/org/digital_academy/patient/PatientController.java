@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import org.digital_academy.implementation.IPatientService;
+import org.digital_academy.patient.dto.PatientRequestDTO;
+import org.digital_academy.patient.dto.PatientResponseDTO;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController

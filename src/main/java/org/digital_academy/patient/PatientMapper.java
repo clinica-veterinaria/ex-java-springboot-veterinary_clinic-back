@@ -1,5 +1,7 @@
 package org.digital_academy.patient;
 
+import org.digital_academy.patient.dto.PatientRequestDTO;
+import org.digital_academy.patient.dto.PatientResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component

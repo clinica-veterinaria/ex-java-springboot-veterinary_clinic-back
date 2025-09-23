@@ -1,4 +1,4 @@
-package org.digital_academy.patient;
+package org.digital_academy.patient.dto;
 
 import lombok.*;
 
@@ -6,7 +6,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PatientRequestDTO {
+public class PatientResponseDTO {
+    private Long id;       // 👈 Incluimos el id generado
     private String name;
     private int age;
     private String breed;

@@ -3,6 +3,9 @@ package org.digital_academy.patient;
 import java.util.List;
 import java.util.Optional;
 
+import org.digital_academy.patient.dto.PatientRequestDTO;
+import org.digital_academy.patient.dto.PatientResponseDTO;
+
 public interface InterfacePatientService {
     List<PatientResponseDTO> listarPatients();
     PatientResponseDTO guardarPatient(PatientRequestDTO requestDTO);
