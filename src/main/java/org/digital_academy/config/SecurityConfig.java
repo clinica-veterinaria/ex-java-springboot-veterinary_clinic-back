@@ -34,9 +34,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Desactiva CSRF (útil para Swagger y pruebas)
             .authorizeHttpRequests(auth -> auth
                 // Rutas públicas
-                .requestMatchers("/auth/**", "/error", "/appointments/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/auth/**", "/error", "/appointments/**", "/patients/**",
+                             "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 // Rutas protegidas
-                .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
+                // .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
                 // Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated()
             )

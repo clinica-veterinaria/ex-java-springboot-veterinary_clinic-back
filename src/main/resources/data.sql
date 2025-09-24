@@ -5,14 +5,14 @@ INSERT INTO users (name, dni, email, password, role, image)
 VALUES ('Administrator', '12345678Z', 'admin@olivia.com',
         '$2a$10$5vt5wq02vQZExo8WwIhD2e5UAnL9qONhxjWDwHFOuo4FzY9Hdf.9C', -- BCrypt of 'admin123'
         'ADMIN',
-        NULL); 
-
+        NULL),
+('Giacomo', '12345678G', 'giacomo@f5.com', 'factoria', 'USER', NULL);
 -- =========================================
 -- PATIENTS
 -- =========================================
 INSERT INTO patients (name, age, breed, gender, pet_identification, tutor_name, tutor_dni, tutor_phone, tutor_email, image)
 VALUES
-('Luna', 5, 'Golden Retriever', 'FEMALE', 'PET123456', 'Ana Pérez', '12345678A', '600123456', 'efrentomascampa@gmail.com', NULL),
+('Luna', 5, 'Golden Retriever', 'FEMALE', 'PET123456', 'Sarita Vazquez', '12345678A', '600123456', 'saravazlo@gmail.com', NULL),
 ('Simba', 4, 'Siamese', 'MALE', 'PET654321', 'Carlos García', '87654321B', '600654321', 'carlos.garcia@gmail.com', NULL),
 ('Milo', 3, 'French Bulldog', 'MALE', 'PET789123', 'Lucía Fernández', '45678912C', '600789123', 'lucia.fernandez@gmail.com', NULL),
 ('Nala', 6, 'Mixed', 'FEMALE', 'PET321987', 'Javier López', '78912345D', '600987321', 'javier.lopez@gmail.com', NULL);
