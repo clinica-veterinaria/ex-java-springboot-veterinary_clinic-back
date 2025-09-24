@@ -6,7 +6,6 @@ VALUES (1, 'admin', '$2a$10$7Q6c7A0VZyN1j8H8vwrNNOiKQqT7HcbMOnm.6Zbsz4PzZQGd1hY8
 
 INSERT INTO user_roles (user_id, role)
 VALUES (1, 'ADMIN');
-
 -- username: admin
 -- password: admin123
 

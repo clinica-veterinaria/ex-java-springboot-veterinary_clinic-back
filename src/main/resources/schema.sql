@@ -3,12 +3,14 @@
 -- =========================================
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    dni VARCHAR(20) UNIQUE, 
-    email VARCHAR(150) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL,
-    image BLOB 
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+    user_id BIGINT NOT NULL,
+    role VARCHAR(50),
+    CONSTRAINT fk_user_role FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- =========================================
@@ -55,17 +57,7 @@ CREATE TABLE IF NOT EXISTS treatments (
 -- =========================================
 -- INDEXES
 -- =========================================
-DROP INDEX IF EXISTS idx_patients_pet_identification ON patients;
 CREATE INDEX idx_patients_pet_identification ON patients (pet_identification);
-
-DROP INDEX IF EXISTS idx_patients_tutor_name ON patients;
 CREATE INDEX idx_patients_tutor_name ON patients (tutor_name);
-
-DROP INDEX IF EXISTS idx_patients_tutor_dni ON patients;
 CREATE INDEX idx_patients_tutor_dni ON patients (tutor_dni);
-
-DROP INDEX IF EXISTS idx_appointments_datetime ON appointments;
 CREATE INDEX idx_appointments_datetime ON appointments (appointment_datetime);
-
-DROP INDEX IF EXISTS idx_users_email ON users;
-CREATE INDEX idx_users_email ON users (email);
