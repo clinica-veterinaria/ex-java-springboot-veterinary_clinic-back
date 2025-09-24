@@ -1,5 +1,6 @@
 package org.digital_academy.config;
 
+import org.digital_academy.user.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,33 +16,33 @@ import org.springframework.security.config.Customizer;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    // Bean para codificar contraseñas, necesario para AuthController
+    private final CustomUserDetailsService userDetailsService;
+
+    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Bean de AuthenticationManager para autenticación manual si es necesario
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // Configuración de seguridad unificada
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desactiva CSRF (útil para Swagger y pruebas)
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Rutas públicas
-                .requestMatchers("/auth/**", "/error", "/appointments/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // Rutas protegidas
-                .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
-                // Cualquier otra ruta requiere autenticación
+                .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/patients/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form.disable()) // Desactiva formulario de login por defecto
-            .httpBasic(Customizer.withDefaults()) // Permite autenticación básica
+            .httpBasic(Customizer.withDefaults())
+            .formLogin(form -> form.disable())
             .logout(logout -> logout.permitAll());
 
         return http.build();

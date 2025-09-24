@@ -1,11 +1,15 @@
 -- =========================================
 -- ADMIN USER (BCrypt password)
 -- =========================================
-INSERT INTO users (name, dni, email, password, role, image)
-VALUES ('Administrator', '12345678Z', 'admin@olivia.com',
-        '$2a$10$5vt5wq02vQZExo8WwIhD2e5UAnL9qONhxjWDwHFOuo4FzY9Hdf.9C', -- BCrypt of 'admin123'
-        'ADMIN',
-        NULL); 
+INSERT INTO users (id, username, password)
+VALUES (1, 'admin', '$2a$10$7Q6c7A0VZyN1j8H8vwrNNOiKQqT7HcbMOnm.6Zbsz4PzZQGd1hY8e');
+
+INSERT INTO user_roles (user_id, role)
+VALUES (1, 'ADMIN');
+
+-- username: admin
+-- password: admin123
+
 
 -- =========================================
 -- PATIENTS

@@ -26,7 +26,7 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
-    
+    // ✅ Registro de usuarios
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -37,22 +37,25 @@ public class AuthController {
             return ResponseEntity.badRequest().body("⚠️ La contraseña no puede ser vacía");
         }
 
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword())); 
-        user.setRoles(Collections.singleton(request.getRole())); 
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRoles(Collections.singleton(request.getRole())); // asigna un rol
 
         userRepository.save(user);
 
         return ResponseEntity.ok("✅ Usuario registrado con éxito");
     }
 
-    
+    // ✅ Login con validación
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword()
+                )
             );
             return ResponseEntity.ok(Map.of("message", "✅ Login exitoso"));
         } catch (BadCredentialsException e) {
@@ -60,4 +63,3 @@ public class AuthController {
         }
     }
 }
-

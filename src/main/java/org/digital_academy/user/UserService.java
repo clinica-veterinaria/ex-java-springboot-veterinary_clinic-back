@@ -12,15 +12,15 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public List<User> getAllUsers() {
+    public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
+    public Optional<UserEntity> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    public User createUser(User user) {
+    public UserEntity createUser(UserEntity user) {
         return userRepository.save(user);
     }
 

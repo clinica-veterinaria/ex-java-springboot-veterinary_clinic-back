@@ -55,8 +55,17 @@ CREATE TABLE IF NOT EXISTS treatments (
 -- =========================================
 -- INDEXES
 -- =========================================
+DROP INDEX IF EXISTS idx_patients_pet_identification ON patients;
 CREATE INDEX idx_patients_pet_identification ON patients (pet_identification);
+
+DROP INDEX IF EXISTS idx_patients_tutor_name ON patients;
 CREATE INDEX idx_patients_tutor_name ON patients (tutor_name);
+
+DROP INDEX IF EXISTS idx_patients_tutor_dni ON patients;
 CREATE INDEX idx_patients_tutor_dni ON patients (tutor_dni);
+
+DROP INDEX IF EXISTS idx_appointments_datetime ON appointments;
 CREATE INDEX idx_appointments_datetime ON appointments (appointment_datetime);
+
+DROP INDEX IF EXISTS idx_users_email ON users;
 CREATE INDEX idx_users_email ON users (email);
