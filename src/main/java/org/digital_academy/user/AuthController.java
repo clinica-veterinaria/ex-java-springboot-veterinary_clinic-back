@@ -62,4 +62,12 @@ public class AuthController {
             return ResponseEntity.status(401).body("❌ Usuario o contraseña incorrectos");
         }
     }
+
+    // ✅ Logout (stateless, solo para frontend o para limpiar cookies/sesión)
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // Si usas JWT, el logout es responsabilidad del frontend (borrar token)
+        // Aquí solo devuelves un mensaje de éxito
+        return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
+    }
 }
