@@ -1,14 +1,22 @@
 package org.digital_academy.patient;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 // import org.springframework.security.access.prepost.PreAuthorize;
 import org.digital_academy.patient.dto.PatientRequestDTO;
 import org.digital_academy.patient.dto.PatientResponseDTO;
 
+import java.io.IOException;
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/patients")
+@CrossOrigin(origins = "*")
 public class PatientController {
 
     private final PatientService patientService;
@@ -26,10 +34,18 @@ public class PatientController {
 
     // Crear nuevo paciente
     // @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @PostMapping
-    public PatientResponseDTO crearPatient(@RequestBody PatientRequestDTO requestDTO) {
-        return patientService.createPatient(requestDTO);
+     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) 
+    public ResponseEntity<PatientResponseDTO> createPatient(
+            @RequestPart("patient") PatientRequestDTO requestDTO,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) throws IOException {
+        try {
+            PatientResponseDTO newPatient = patientService.createPatient(requestDTO, imageFile);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newPatient);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 
     // Obtener paciente por ID
     // @PreAuthorize("hasAnyRole('ADMIN')")
