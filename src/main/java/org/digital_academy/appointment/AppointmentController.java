@@ -1,16 +1,27 @@
 package org.digital_academy.appointment;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
 import org.digital_academy.appointment.dto.AppointmentRequestDto;
 import org.digital_academy.appointment.dto.AppointmentResponseDto;
-import org.digital_academy.util.ApiMessageDto;
 import org.digital_academy.patient.Patient;
 import org.digital_academy.patient.PatientRepository;
+import org.digital_academy.util.ApiMessageDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/appointments")
@@ -65,6 +76,23 @@ public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@Pa
             .toList();
     return ResponseEntity.ok(response);
 }
+
+ @GetMapping("/upcoming")
+    public ResponseEntity<Map<String, List<AppointmentResponseDto>>> getUpcomingAppointments(@RequestParam(defaultValue = "3") int limit) {
+        List<AppointmentResponseDto> upcomingAppointments = appointmentService.getUpcomingAppointments(limit).stream()
+                .map(appointmentService::mapToResponseDto)
+                .toList();
+
+        return ResponseEntity.ok(Map.of("appointments", upcomingAppointments));
+    }
+
+    @GetMapping("/disponibles")
+    public ResponseEntity<Map<String, List<String>>> getAvailableSlots(@RequestParam String fecha) {
+        LocalDate date = LocalDate.parse(fecha);
+        List<String> availableSlots = appointmentService.getAvailableSlotsForDate(date);
+
+        return ResponseEntity.ok(Map.of("slots", availableSlots));
+    }
 
    @PutMapping("/{id}")
 public ResponseEntity<AppointmentResponseDto> updateAppointment(@PathVariable Long id,
