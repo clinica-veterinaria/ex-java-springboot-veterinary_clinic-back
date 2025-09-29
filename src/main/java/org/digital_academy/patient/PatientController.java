@@ -12,8 +12,6 @@ import org.digital_academy.patient.dto.PatientResponseDTO;
 import java.io.IOException;
 import java.util.List;
 
-
-
 @RestController
 @RequestMapping("/patients")
 @CrossOrigin(origins = "*")
@@ -27,14 +25,29 @@ public class PatientController {
 
     // Listar todos los pacientes
     // @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping
-    public List<PatientResponseDTO> listarPatients() {
-        return patientService.getAllPatients();
+   @GetMapping
+    public List<PatientResponseDTO> listarPatients(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String species,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String sortBy
+    ) {
+        // Si no hay parámetros, devuelve todos
+        if ((search == null || search.isEmpty()) && 
+            (species == null || species.isEmpty()) && 
+            (gender == null || gender.isEmpty()) &&
+            (sortBy == null || sortBy.isEmpty())) {
+            return patientService.getAllPatients();
+        }
+        
+        // Si hay parámetros, busca con filtros
+        return patientService.searchPatients(search, species, gender, sortBy);
+    
     }
 
     // Crear nuevo paciente
     // @PreAuthorize("hasAnyRole('ADMIN','USER')")
-     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) 
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PatientResponseDTO> createPatient(
             @RequestPart("patient") PatientRequestDTO requestDTO,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) throws IOException {
@@ -45,7 +58,6 @@ public class PatientController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     // Obtener paciente por ID
     // @PreAuthorize("hasAnyRole('ADMIN')")
@@ -75,7 +87,8 @@ public class PatientController {
     @GetMapping("/petIdentification/{petIdentification}")
     public PatientResponseDTO getByPetIdentification(@PathVariable String petIdentification) {
         return patientService.getByPetIdentification(petIdentification)
-                .orElseThrow(() -> new RuntimeException("Patient no encontrado con identificación " + petIdentification));
+                .orElseThrow(
+                        () -> new RuntimeException("Patient no encontrado con identificación " + petIdentification));
     }
 
     // Buscar por DNI del tutor
@@ -101,4 +114,5 @@ public class PatientController {
         return patientService.getByTutorEmail(tutorEmail)
                 .orElseThrow(() -> new RuntimeException("Patient no encontrado con email del tutor " + tutorEmail));
     }
+
 }
