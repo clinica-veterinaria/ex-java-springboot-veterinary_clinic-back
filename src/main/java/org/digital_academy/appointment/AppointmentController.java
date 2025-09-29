@@ -96,6 +96,19 @@ public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@Pa
         return ResponseEntity.ok(Map.of("slots", availableSlots));
     }
 
+    @GetMapping("/by-date")
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByDate(
+        @RequestParam String fecha) {
+        LocalDate date = LocalDate.parse(fecha);
+
+        List<AppointmentResponseDto> response = appointmentService
+            .getAppointmentsByDate(date).stream()
+            .map(appointmentService::mapToResponseDto)
+            .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
    @PutMapping("/{id}")
 public ResponseEntity<AppointmentResponseDto> updateAppointment(@PathVariable Long id,
         @Valid @RequestBody AppointmentRequestDto request) {

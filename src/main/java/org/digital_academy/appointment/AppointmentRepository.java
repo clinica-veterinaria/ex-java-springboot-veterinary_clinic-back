@@ -17,6 +17,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByAppointmentDatetimeBefore(LocalDateTime dateTime);
 
     List<Appointment> findByAppointmentDatetimeAfterOrderByAppointmentDatetimeAsc(LocalDateTime dateTime, Pageable pageable);
-
     
 }

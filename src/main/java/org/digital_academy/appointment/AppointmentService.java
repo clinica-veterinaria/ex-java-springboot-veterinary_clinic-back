@@ -49,6 +49,12 @@ public class AppointmentService {
         );
     }
 
+    public List<Appointment> getAppointmentsByDate(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        return appointmentRepository.findByAppointmentDatetimeBetween(startOfDay, endOfDay);
+    }
+
     public List<String> getAvailableSlotsForDate(LocalDate date) {
         LocalTime startTime = LocalTime.of(9, 0);
         LocalTime endTime = LocalTime.of(17, 0);
@@ -73,6 +79,7 @@ public class AppointmentService {
                 .filter(slot -> !occupiedSlots.contains(slot))
                 .collect(Collectors.toList());
     }
+    
 
     public Appointment createAppointment(Appointment appointment) {
         validateAppointment(appointment);
