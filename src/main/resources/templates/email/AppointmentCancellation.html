@@ -1,115 +1,139 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cancelación de cita</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Templates Email Clínica Oliwa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body style="margin: 0; padding: 40px 20px; font-family: 'Space Grotesk', Arial, sans-serif; background-color: #ffffff;">
-  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+
+<body style="margin: 0; padding: 20px; font-family: 'Host Grotesk', Arial, sans-serif; background-color: #F2F2F2;">
+
+  <!-- EMAIL DE CANCELACIÓN -->
+  <h2 style="text-align: center; color: #404040; margin-bottom: 40px;">📅 EMAIL DE CANCELACIÓN</h2>
+
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 60px;">
     <tr>
       <td align="center">
-        <table width="600" border="0" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-         
+        <table width="600" border="0" cellpadding="0" cellspacing="0"
+          style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
           <tr>
-            <td style="padding: 25px 30px 10px; text-align: center;">
-              <h1 style="color: #000000; margin: 0; font-size: 28px; font-weight: 700;">Oliwa</h1>
-              <p style="color: #000000; margin: 5px 0 0 0; font-size: 14px; opacity: 0.7;">Clínica Veterinaria</p>
+            <td style="padding: 24px 32px 16px; text-align: center;">
+              <h1 style="color: #101010; margin: 0; font-size: 32px; font-weight: 700;">Oliwa</h1>
+              <p style="color: #404040; margin: 8px 0 0 0; font-size: 14px; opacity: 0.8;">Clínica Veterinaria</p>
             </td>
           </tr>
-          
-       
+
+          <!-- Hero Section - Error Colors -->
           <tr>
-            <td style="background-color: #BBB5FA; padding: 30px; text-align: center; border-radius: 20px 20px 0 0;">
-              <h2 style="color: #000000; margin: 0; font-size: 26px; font-weight: 600;">Cancelación de Cita</h2>
-              <p style="color: #000000; margin: 10px 0 0 0; font-size: 16px; font-weight: 400; opacity: 0.9;">Tu cita ha sido cancelada correctamente</p>
+            <td
+              style="background-color: #F2F2F2; padding: 32px; text-align: center; margin: 0 20px;">
+              <h2 style="color: #101010; margin: 0; font-size: 24px; font-weight: 600;">Cancelación de Cita</h2>
+              <p style="color: #101010; margin: 16px 0 0 0; font-size: 16px; font-weight: 400; opacity: 0.9;">Tu cita ha
+                sido cancelada correctamente</p>
             </td>
           </tr>
-          
-          
+
+          <!-- Content -->
           <tr>
-            <td style="padding: 35px 30px;">
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #000000;">Hola <b th:text="${tutorName}">Tutor</b>,</p>
-              <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.6; color: #000000;">Te confirmamos que tu cita ha sido <b>cancelada</b> con los siguientes detalles:</p>
-              
-              
-              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #f8f9ff; border-radius: 12px; margin: 20px 0; border: 1px solid #eaeaea;">
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #101010;">Hola <b
+                  th:text="${tutorName}">Tutor</b>,</p>
+              <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #101010;">Te confirmamos que tu
+                cita ha sido <b>cancelada</b> con los siguientes detalles:</p>
+
+              <!-- Appointment Details -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                style="background-color: #F2F2F2; border-radius: 12px; margin: 20px 0; border: 1px solid #D7D7D7;">
                 <tr>
                   <td style="padding: 20px;">
                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                       <tr>
                         <td width="40" style="vertical-align: top;">
-                          <div style="width: 36px; height: 36px; background-color: #BBB5FA; border-radius: 50%; text-align: center; line-height: 36px; color: white; font-size: 16px;">📅</div>
+                          <div
+                            style="width: 36px; height: 36px; background-color: #FDD3D0; border-radius: 50%; text-align: center; line-height: 36px; color: white; font-size: 16px;">
+                            📅</div>
                         </td>
-                        <td style="vertical-align: middle; padding-left: 15px;">
-                          <p style="margin: 0; font-size: 16px; color: #000000;"><b>Fecha:</b> <span th:text="${fecha}">dd/MM/yyyy</span></p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="2" height="15"></td>
-                      </tr>
-                      <tr>
-                        <td width="40" style="vertical-align: top;">
-                          <div style="width: 36px; height: 36px; background-color: #BBB5FA; border-radius: 50%; text-align: center; line-height: 36px; color: white; font-size: 16px;">⏰</div>
-                        </td>
-                        <td style="vertical-align: middle; padding-left: 15px;">
-                          <p style="margin: 0; font-size: 16px; color: #000000;"><b>Hora:</b> <span th:text="${hora}">HH:mm</span></p>
+                        <td style="vertical-align: middle; padding-left: 16px;">
+                          <p style="margin: 0; font-size: 16px; color: #101010; font-weight: 600;"><b>Fecha:</b> <span
+                              th:text="${fecha}" style="font-weight: 400;">dd/MM/yyyy</span></p>
                         </td>
                       </tr>
                       <tr>
-                        <td colspan="2" height="15"></td>
+                        <td colspan="2" height="16"></td>
                       </tr>
                       <tr>
                         <td width="40" style="vertical-align: top;">
-                          <div style="width: 36px; height: 36px; background-color: #BBB5FA; border-radius: 50%; text-align: center; line-height: 36px; color: white; font-size: 16px;">🐕</div>
+                          <div
+                            style="width: 36px; height: 36px; background-color: #FDD3D0; border-radius: 50%; text-align: center; line-height: 36px; color: white; font-size: 16px;">
+                            ⏰</div>
                         </td>
-                        <td style="vertical-align: middle; padding-left: 15px;">
-                          <p style="margin: 0; font-size: 16px; color: #000000;"><b>Mascota:</b> <span th:text="${petName}">Nombre mascota</span></p>
+                        <td style="vertical-align: middle; padding-left: 16px;">
+                          <p style="margin: 0; font-size: 16px; color: #101010; font-weight: 600;"><b>Hora:</b> <span
+                              th:text="${hora}" style="font-weight: 400;">HH:mm</span></p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" height="16"></td>
+                      </tr>
+                      <tr>
+                        <td width="40" style="vertical-align: top;">
+                          <div
+                            style="width: 36px; height: 36px; background-color: #FDD3D0; border-radius: 50%; text-align: center; line-height: 36px; color: white; font-size: 16px;">
+                            🐕</div>
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 16px;">
+                          <p style="margin: 0; font-size: 16px; color: #101010; font-weight: 600;"><b>Mascota:</b> <span
+                              th:text="${petName}" style="font-weight: 400;">Nombre mascota</span></p>
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
               </table>
-              
-              <p style="margin: 25px 0; font-size: 16px; line-height: 1.6; color: #000000;">Lamentamos que no puedas asistir en esta ocasión. 🐾</p>
-              
-              <p style="margin: 20px 0; font-size: 16px; line-height: 1.6; color: #000000;">Si necesitas reagendar tu cita o solicitar una nueva, estaremos encantados de atenderte nuevamente.</p>
-              
-              
-              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+
+              <p style="margin: 24px 0; font-size: 16px; line-height: 1.6; color: #101010;">Lamentamos que no puedas
+                asistir en esta ocasión. 🐾</p>
+              <p style="margin: 20px 0; font-size: 16px; line-height: 1.6; color: #101010;">Si necesitas reagendar tu
+                cita o solicitar una nueva, estaremos encantados de atenderte nuevamente.</p>
+
+              <!-- Buttons -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
                 <tr>
                   <td align="center">
-                    <a href="#" th:href="${dashboardUrl}" style="background-color: #D9E460; color: #000000; padding: 14px 35px; text-decoration: none; display: inline-block; font-weight: 600; border-radius: 50px; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin: 0 10px;">Solicitar nueva cita</a>
-                    <a href="#" th:href="${contactUrl}" style="background-color: #BBB5FA; color: #000000; padding: 14px 35px; text-decoration: none; display: inline-block; font-weight: 600; border-radius: 50px; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin: 0 10px;">Contactar con la clínica</a>
+                    <a href="#" th:href="${dashboardUrl}"
+                      style="background-color: #BBB5FA; color: #101010; padding: 14px 28px; text-decoration: none; display: inline-block; font-weight: 600; border-radius: 50px; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin: 0 8px;">Solicitar
+                      nueva cita</a>
+                    <a href="#" th:href="${contactUrl}"
+                      style="background-color: #D7D7D7; color: #101010; padding: 14px 28px; text-decoration: none; display: inline-block; font-weight: 600; border-radius: 50px; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin: 0 8px;">Contactar
+                      clínica</a>
                   </td>
                 </tr>
               </table>
-              
-              <p style="margin: 25px 0 0 0; font-size: 14px; color: #000000; line-height: 1.6; opacity: 0.7;">Recuerda que puedes programar nuevas citas a través de nuestro sistema online o contactándonos directamente.</p>
+
+              <p style="margin: 24px 0 0 0; font-size: 14px; color: #404040; line-height: 1.6; opacity: 0.8;">Recuerda
+                que puedes programar nuevas citas a través de nuestro sistema online o contactándonos directamente.</p>
             </td>
           </tr>
-          
-         
+
+          <!-- Footer -->
           <tr>
-            <td style="background-color: #EEF3B9; padding: 25px; text-align: center; border-radius: 0 0 20px 20px;">
-              <p style="color: #000000; margin: 0 0 10px 0; font-size: 16px; font-weight: 500;">Esperamos verte pronto en <span style="color: #000000; font-weight: 600;">Oliwa</span></p>
-              <p style="color: #000000; margin: 0; font-size: 12px; opacity: 0.7;"><small>Este es un mensaje automático, por favor no respondas a este correo.</small></p>
-              
-              
-              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 20px;">
-                <tr>
-                  <td align="center">
-                    <p style="color: #000000; margin: 0; font-size: 12px; opacity: 0.7;">Clínica Veterinaria Oliwa · margaritaoliwa@gmail.com · +34 123 456 789</p>
-                  </td>
-                </tr>
-              </table>
+            <td style="background-color: #EEF3B9; padding: 24px; text-align: center; border-radius: 0 0 12px 12px;">
+              <p style="color: #101010; margin: 0 0 8px 0; font-size: 16px; font-weight: 500;">Esperamos verte pronto en
+                <span style="color: #D9E460; font-weight: 600;">Oliwa</span></p>
+              <p style="color: #404040; margin: 0 0 16px 0; font-size: 12px; opacity: 0.8;"><small>Este es un mensaje
+                  automático, por favor no respondas a este correo.</small></p>
+              <p style="color: #404040; margin: 0; font-size: 12px; opacity: 0.8;">Clínica Veterinaria Oliwa ·
+                margaritaoliwa@gmail.com · +34 123 456 789</p>
             </td>
           </tr>
         </table>
       </td>
     </tr>
   </table>
+
 </body>
+
 </html>
