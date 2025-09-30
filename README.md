@@ -45,10 +45,12 @@ Está desarrollado con **Java Spring Boot** y **MySQL**. Su propósito es ofrece
 	 ```
 2. Configura la base de datos MySQL (ver `application.properties`).
 3. Levanta los servicios con Docker Compose:
+   
+   [Aquí tienes una guía](https://www.notion.so/1-Instalaci-n-y-preparaci-n-de-Docker-26a5425dd9fa80e5806edc9cdc15691d?source=copy_link)
 	 ```
 	 docker compose up -d
 	 ```
-4. Ejecuta la aplicación Spring Boot:
+5. Ejecuta la aplicación Spring Boot:
 	 ```
 	 mvn spring-boot:run
 	 ```
