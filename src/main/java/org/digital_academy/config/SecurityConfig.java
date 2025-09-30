@@ -37,7 +37,7 @@ public class SecurityConfig {
                 // 🔑 muy importante: permitir preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Rutas públicas
-                .requestMatchers("/auth/**", "/error", "/appointments/**", "/patients/**","/treatments/**",
+                .requestMatchers("/auth/**", "/error", "/appointments/**", "/patients/**","/treatments/**","/users/**",
                              "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 // Rutas protegidas
                 // .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
