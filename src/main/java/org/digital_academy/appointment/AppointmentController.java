@@ -26,61 +26,80 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/appointments")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final PatientRepository patientRepository;
 
-   @PostMapping
-public ResponseEntity<AppointmentResponseDto> createAppointment(
-        @Valid @RequestBody AppointmentRequestDto request) {
+    @PostMapping
+    public ResponseEntity<AppointmentResponseDto> createAppointment(
+            @Valid @RequestBody AppointmentRequestDto request) {
 
-    Patient patient = patientRepository.findById(request.getPatientId())
-            .orElseThrow(() -> new RuntimeException("Patient not found"));
+        Patient patient = patientRepository.findById(request.getPatientId())
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-    Appointment appointment = Appointment.builder()
-            .appointmentDatetime(request.getAppointmentDatetime())
-            .type(request.getType())
-            .reason(request.getReason())
-            .status("PENDING")
-            .patient(patient)
-            .build();
+        Appointment appointment = Appointment.builder()
+                .appointmentDatetime(request.getAppointmentDatetime())
+                .type(request.getType())
+                .reason(request.getReason())
+                .status("PENDING")
+                .patient(patient)
+                .build();
 
-    Appointment saved = appointmentService.createAppointment(appointment);
-    AppointmentResponseDto response = appointmentService.mapToResponseDto(saved);
+        Appointment saved = appointmentService.createAppointment(appointment);
+        AppointmentResponseDto response = appointmentService.mapToResponseDto(saved);
 
-    return ResponseEntity.status(201).body(response);
-}
+        return ResponseEntity.status(201).body(response);
+    }
 
+    @GetMapping
+    public ResponseEntity<List<AppointmentResponseDto>> getAllAppointments(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String sortBy) {
+   
 
-  @GetMapping
-public ResponseEntity<List<AppointmentResponseDto>> getAllAppointments() {
-    List<AppointmentResponseDto> response = appointmentService.getAllAppointments().stream()
-            .map(appointmentService::mapToResponseDto)
-            .toList();
-    return ResponseEntity.ok(response);
-}
+        if ((search != null && !search.isEmpty()) || type != null || status != null || sortBy != null) {
 
-  @GetMapping("/{id}")
-public ResponseEntity<AppointmentResponseDto> getAppointmentById(@PathVariable Long id) {
-    return appointmentService.getAppointmentById(id)
-            .map(appointmentService::mapToResponseDto)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-}
+            List<Appointment> filteredAppointments = appointmentService.searchAndFilterAppointments(
+                    search, type, status, sortBy);
 
-@GetMapping("/patient/{patientId}")
-public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@PathVariable Long patientId) {
-    List<AppointmentResponseDto> response = appointmentService.getAppointmentsByPatient(patientId).stream()
-            .map(appointmentService::mapToResponseDto)
-            .toList();
-    return ResponseEntity.ok(response);
-}
+            List<AppointmentResponseDto> response = filteredAppointments.stream()
+                    .map(appointmentService::mapToResponseDto)
+                    .toList();
 
- @GetMapping("/upcoming")
-    public ResponseEntity<Map<String, List<AppointmentResponseDto>>> getUpcomingAppointments(@RequestParam(defaultValue = "3") int limit) {
+            return ResponseEntity.ok(response);
+        }
+        
+        List<AppointmentResponseDto> response = appointmentService.getAllAppointments().stream()
+                .map(appointmentService::mapToResponseDto)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AppointmentResponseDto> getAppointmentById(@PathVariable Long id) {
+        return appointmentService.getAppointmentById(id)
+                .map(appointmentService::mapToResponseDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@PathVariable Long patientId) {
+        List<AppointmentResponseDto> response = appointmentService.getAppointmentsByPatient(patientId).stream()
+                .map(appointmentService::mapToResponseDto)
+                .toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<Map<String, List<AppointmentResponseDto>>> getUpcomingAppointments(
+            @RequestParam(defaultValue = "3") int limit) {
         List<AppointmentResponseDto> upcomingAppointments = appointmentService.getUpcomingAppointments(limit).stream()
                 .map(appointmentService::mapToResponseDto)
                 .toList();
@@ -98,36 +117,35 @@ public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@Pa
 
     @GetMapping("/by-date")
     public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByDate(
-        @RequestParam String fecha) {
+            @RequestParam String fecha) {
         LocalDate date = LocalDate.parse(fecha);
 
         List<AppointmentResponseDto> response = appointmentService
-            .getAppointmentsByDate(date).stream()
-            .map(appointmentService::mapToResponseDto)
-            .toList();
+                .getAppointmentsByDate(date).stream()
+                .map(appointmentService::mapToResponseDto)
+                .toList();
 
         return ResponseEntity.ok(response);
     }
 
-   @PutMapping("/{id}")
-public ResponseEntity<AppointmentResponseDto> updateAppointment(@PathVariable Long id,
-        @Valid @RequestBody AppointmentRequestDto request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<AppointmentResponseDto> updateAppointment(@PathVariable Long id,
+            @Valid @RequestBody AppointmentRequestDto request) {
 
-    Patient patient = patientRepository.findById(request.getPatientId())
-            .orElseThrow(() -> new RuntimeException("Patient not found"));
+        Patient patient = patientRepository.findById(request.getPatientId())
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-    Appointment updated = Appointment.builder()
-            .appointmentDatetime(request.getAppointmentDatetime())
-            .type(request.getType())
-            .reason(request.getReason())
-            .status(request.getStatus() != null ? request.getStatus() : "PENDING")
-            .patient(patient)
-            .build();
+        Appointment updated = Appointment.builder()
+                .appointmentDatetime(request.getAppointmentDatetime())
+                .type(request.getType())
+                .reason(request.getReason())
+                .status(request.getStatus() != null ? request.getStatus() : "PENDING")
+                .patient(patient)
+                .build();
 
-    Appointment saved = appointmentService.updateAppointment(id, updated);
-    return ResponseEntity.ok(appointmentService.mapToResponseDto(saved));
-}
-
+        Appointment saved = appointmentService.updateAppointment(id, updated);
+        return ResponseEntity.ok(appointmentService.mapToResponseDto(saved));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiMessageDto> cancelAppointment(@PathVariable Long id) {

@@ -32,7 +32,7 @@ public class PatientController {
             @RequestParam(required = false) String gender,
             @RequestParam(required = false) String sortBy
     ) {
-        // Si no hay parámetros, devuelve todos
+
         if ((search == null || search.isEmpty()) && 
             (breed == null || breed.isEmpty()) && 
             (gender == null || gender.isEmpty()) &&
@@ -40,9 +40,7 @@ public class PatientController {
             return patientService.getAllPatients();
         }
         
-        // Si hay parámetros, busca con filtros
         return patientService.searchPatients(search, breed, gender, sortBy);
-    
     }
 
     // Crear nuevo paciente
