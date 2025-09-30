@@ -2,14 +2,15 @@ package org.digital_academy.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.Customizer;
 
 @Configuration
 @EnableMethodSecurity
@@ -33,6 +34,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Desactiva CSRF (útil para Swagger y pruebas)
             .authorizeHttpRequests(auth -> auth
+                // 🔑 muy importante: permitir preflight
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Rutas públicas
                 .requestMatchers("/auth/**", "/error", "/appointments/**", "/patients/**","/treatments/**",
                              "/swagger-ui/**", "/v3/api-docs/**").permitAll()
