@@ -4,10 +4,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-// import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity; 
 import org.digital_academy.patient.dto.PatientRequestDTO;
 import org.digital_academy.patient.dto.PatientResponseDTO;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,14 +26,14 @@ public class PatientController {
     }
 
     // Listar todos los pacientes
-    // @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public List<PatientResponseDTO> listarPatients() {
         return patientService.getAllPatients();
     }
 
     // Crear nuevo paciente
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
+     @PreAuthorize("hasAnyRole('ADMIN','USER')")
      @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) 
     public ResponseEntity<PatientResponseDTO> createPatient(
             @RequestPart("patient") PatientRequestDTO requestDTO,
@@ -48,7 +48,7 @@ public class PatientController {
 
 
     // Obtener paciente por ID
-    // @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{id}")
     public PatientResponseDTO obtenerPatient(@PathVariable Long id) {
         return patientService.getPatientById(id)
@@ -56,7 +56,7 @@ public class PatientController {
     }
 
     // Actualizar paciente
-    // @PreAuthorize("hasAnyRole('ADMIN')")
+     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
     public PatientResponseDTO actualizarPatient(@PathVariable Long id, @RequestBody PatientRequestDTO requestDTO) {
         return patientService.updatePatient(id, requestDTO)
@@ -64,14 +64,14 @@ public class PatientController {
     }
 
     // Eliminar paciente
-    // @PreAuthorize("hasRole('ADMIN')")
+     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void eliminarPatient(@PathVariable Long id) {
         patientService.deletePatient(id);
     }
 
     // Buscar por número de identificación del paciente
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
+     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/petIdentification/{petIdentification}")
     public PatientResponseDTO getByPetIdentification(@PathVariable String petIdentification) {
         return patientService.getByPetIdentification(petIdentification)
@@ -79,7 +79,7 @@ public class PatientController {
     }
 
     // Buscar por DNI del tutor
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
+     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/tutorDni/{tutorDni}")
     public PatientResponseDTO getByTutorDni(@PathVariable String tutorDni) {
         return patientService.getByTutorDni(tutorDni)
@@ -87,7 +87,7 @@ public class PatientController {
     }
 
     // Buscar por teléfono del tutor
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
+     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/tutorPhone/{tutorPhone}")
     public PatientResponseDTO getByTutorPhone(@PathVariable String tutorPhone) {
         return patientService.getByTutorPhone(tutorPhone)
@@ -95,7 +95,7 @@ public class PatientController {
     }
 
     // Buscar por email del tutor
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
+     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/tutorEmail/{tutorEmail}")
     public PatientResponseDTO getByTutorEmail(@PathVariable String tutorEmail) {
         return patientService.getByTutorEmail(tutorEmail)
