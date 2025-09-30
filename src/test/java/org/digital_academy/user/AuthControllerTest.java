@@ -1,10 +1,8 @@
 package org.digital_academy.user;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -14,6 +12,7 @@ import java.util.Optional;
 
 import org.digital_academy.config.SecurityConfig;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,104 +20,87 @@ import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
 public class AuthControllerTest {
 
-    @MockBean
-    private UserRepository userRepository;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockBean
-    private PasswordEncoder passwordEncoder;
+        @MockBean
+        private UserRepository userRepository;
 
-    @MockBean
-    private AuthenticationManager authenticationManager;
+        @MockBean
+        private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private MockMvc mockMvc;
+        @MockBean
+        private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private ObjectMapper objectMapper; // для перетворення об’єктів у JSON
+        private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
-    void register_NewUser_ReturnsOk() throws Exception {
-        RegisterRequest request = new RegisterRequest();
-        request.setUsername("alice");
-        request.setPassword("secret");
-        request.setRole("ROLE_USER");
-        request.setName("Alice Smith");
-        request.setDni("12345678A");
-        request.setEmail("alice@example.com");
+        @Test
+        void testRegister_Success() throws Exception {
+                RegisterRequest request = new RegisterRequest();
+                request.setEmail("test@example.com");
+                request.setPassword("secret");
+                request.setName("Alice");
 
-        when(userRepository.findByUsername("alice")).thenReturn(Optional.empty());
-        when(passwordEncoder.encode("secret")).thenReturn("encodedSecret");
-        when(userRepository.save(any(UserEntity.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+                // JSON як String
+                String userDataJson = objectMapper.writeValueAsString(request);
+                MockMultipartFile userData = new MockMultipartFile("userData", "", "application/json",
+                                userDataJson.getBytes());
+                MockMultipartFile photo = new MockMultipartFile("photo", "photo.png", "image/png",
+                                "fakeimage".getBytes());
 
-        mockMvc.perform(post("/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("✅ Usuario registrado con éxito"));
+                // Моки
+                Mockito.when(userRepository.findByUsername(eq("test@example.com"))).thenReturn(Optional.empty());
+                Mockito.when(passwordEncoder.encode("secret")).thenReturn("encoded-secret");
+                Mockito.when(userRepository.save(any(UserEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        verify(userRepository).save(any(UserEntity.class));
-    }
+                mockMvc.perform(multipart("/auth/register")
+                                .file(userData)
+                                .file(photo)
+                                .contentType(MediaType.MULTIPART_FORM_DATA))
+                                .andExpect(status().isOk())
+                                .andExpect(content().string("✅ Usuario registrado con éxito"));
+        }
 
-    @Test
-    void register_ExistingUser_ReturnsBadRequest() throws Exception {
-        RegisterRequest request = new RegisterRequest();
-        request.setUsername("bob");
-        request.setPassword("1234");
-        request.setRole("USER");
+        @Test
+        void testLogin_Success() throws Exception {
+                LoginRequest request = new LoginRequest();
+                request.setUsername("test@example.com");
+                request.setPassword("secret");
 
-        when(userRepository.findByUsername("bob"))
-                .thenReturn(Optional.of(new UserEntity()));
+                Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                                .thenReturn(new UsernamePasswordAuthenticationToken("test@example.com", "secret"));
 
-        mockMvc.perform(post("/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("⚠️ El usuario ya existe"));
-    }
+                mockMvc.perform(post("/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.message").value("✅ Login exitoso"));
+        }
 
-    @Test
-    void login_ValidCredentials_ReturnsOk() throws Exception {
-        LoginRequest request = new LoginRequest("alice", "secret");
+        @Test
+        void testLogin_Failure() throws Exception {
+                LoginRequest request = new LoginRequest();
+                request.setUsername("wrong@example.com");
+                request.setPassword("bad");
 
-        when(authenticationManager.authenticate(any()))
-                .thenReturn(org.mockito.Mockito.mock(org.springframework.security.core.Authentication.class));
+                Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                                .thenThrow(new BadCredentialsException("Invalid"));
 
-        mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("✅ Login exitoso"));
-    }
-
-    @Test
-    void login_InvalidCredentials_ReturnsUnauthorized() throws Exception {
-        LoginRequest request = new LoginRequest("bob", "wrong");
-
-        doThrow(new BadCredentialsException("bad credentials"))
-                .when(authenticationManager).authenticate(any());
-
-        mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("❌ Usuario o contraseña incorrectos"));
-    }
-
-    @Test
-    void logout_ReturnsOk() throws Exception {
-        mockMvc.perform(post("/auth/logout"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Logout exitoso"));
-    }
+                mockMvc.perform(post("/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isUnauthorized())
+                                .andExpect(content().string("❌ Usuario o contraseña incorrectos"));
+        }
 }

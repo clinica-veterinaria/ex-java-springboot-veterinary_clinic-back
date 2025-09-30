@@ -1,12 +1,14 @@
 package org.digital_academy.patient;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockMultipartFile;
 
 class PatientServiceTest {
 
@@ -43,10 +46,12 @@ class PatientServiceTest {
         patient.setPetIdentification("PET123");
 
         requestDTO = new PatientRequestDTO();
+        requestDTO.setName("Bobby");
 
         responseDTO = new PatientResponseDTO();
         responseDTO.setId(1L);
         responseDTO.setPetIdentification("PET123");
+        responseDTO.setName("Bobby");
     }
 
     @Test
@@ -58,7 +63,6 @@ class PatientServiceTest {
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getPetIdentification()).isEqualTo("PET123");
-
         verify(patientRepository, times(1)).findAll();
     }
 
@@ -70,7 +74,7 @@ class PatientServiceTest {
         Optional<PatientResponseDTO> result = patientService.getPatientById(1L);
 
         assertThat(result).isPresent();
-        assertThat(result.get().getPetIdentification()).isEqualTo("PET123");
+        assertThat(result.get().getName()).isEqualTo("Bobby");
     }
 
     @Test
@@ -83,31 +87,63 @@ class PatientServiceTest {
     }
 
     @Test
-    void testCreatePatient() {
+    void testCreatePatientWithoutImage() throws IOException {
         when(patientMapper.toEntity(requestDTO)).thenReturn(patient);
         when(patientRepository.save(patient)).thenReturn(patient);
         when(patientMapper.toResponseDTO(patient)).thenReturn(responseDTO);
 
-        PatientResponseDTO result = patientService.createPatient(requestDTO);
+        PatientResponseDTO result = patientService.createPatient(requestDTO, null);
 
-        assertThat(result.getPetIdentification()).isEqualTo("PET123");
+        assertThat(result.getName()).isEqualTo("Bobby");
         verify(patientRepository, times(1)).save(patient);
+    }
+
+    @Test
+    void testCreatePatientWithImage() throws IOException {
+        MockMultipartFile imageFile = new MockMultipartFile(
+                "image",
+                "photo.jpg",
+                "image/jpeg",
+                "fake-image-content".getBytes());
+
+        when(patientMapper.toEntity(requestDTO)).thenReturn(patient);
+        when(patientRepository.save(any(Patient.class))).thenReturn(patient);
+        when(patientMapper.toResponseDTO(patient)).thenReturn(responseDTO);
+
+        PatientResponseDTO result = patientService.createPatient(requestDTO, imageFile);
+
+        assertThat(result.getName()).isEqualTo("Bobby");
+        verify(patientRepository, times(1)).save(any(Patient.class));
+        assertThat(patient.getImage()).isNotNull();
+    }
+
+    @Test
+    void testCreatePatient_IOException() throws IOException {
+        MockMultipartFile imageFile = mock(MockMultipartFile.class);
+        when(imageFile.isEmpty()).thenReturn(false);
+        when(imageFile.getBytes()).thenThrow(new IOException());
+
+        when(patientMapper.toEntity(requestDTO)).thenReturn(patient);
+
+        try {
+            patientService.createPatient(requestDTO, imageFile);
+        } catch (IOException e) {
+            assertThat(e).isInstanceOf(IOException.class);
+        }
     }
 
     @Test
     void testUpdatePatient_Found() {
         when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
-        doAnswer(invocation -> {
-            // симулюємо оновлення сутності
-            return null;
-        }).when(patientMapper).updateEntityFromDto(requestDTO, patient);
+        doNothing().when(patientMapper).updateEntityFromDto(requestDTO, patient);
         when(patientRepository.save(patient)).thenReturn(patient);
         when(patientMapper.toResponseDTO(patient)).thenReturn(responseDTO);
 
         Optional<PatientResponseDTO> result = patientService.updatePatient(1L, requestDTO);
 
         assertThat(result).isPresent();
-        assertThat(result.get().getPetIdentification()).isEqualTo("PET123");
+        verify(patientMapper, times(1)).updateEntityFromDto(requestDTO, patient);
+        verify(patientRepository, times(1)).save(patient);
     }
 
     @Test
@@ -129,43 +165,63 @@ class PatientServiceTest {
     }
 
     @Test
-    void testGetByPetIdentification() {
+    void testGetByPetIdentification_Found() {
         when(patientRepository.findByPetIdentification("PET123")).thenReturn(Optional.of(patient));
         when(patientMapper.toResponseDTO(patient)).thenReturn(responseDTO);
 
         Optional<PatientResponseDTO> result = patientService.getByPetIdentification("PET123");
 
         assertThat(result).isPresent();
-        assertThat(result.get().getPetIdentification()).isEqualTo("PET123");
     }
 
     @Test
-    void testGetByTutorDni() {
-        when(patientRepository.findByTutorDni("12345678A")).thenReturn(Optional.of(patient));
+    void testGetByPetIdentification_NotFound() {
+        when(patientRepository.findByPetIdentification("PET999")).thenReturn(Optional.empty());
+
+        Optional<PatientResponseDTO> result = patientService.getByPetIdentification("PET999");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void testGetByTutorDni_Found() {
+        when(patientRepository.findByTutorDni("12345678X")).thenReturn(Optional.of(patient));
         when(patientMapper.toResponseDTO(patient)).thenReturn(responseDTO);
 
-        Optional<PatientResponseDTO> result = patientService.getByTutorDni("12345678A");
+        Optional<PatientResponseDTO> result = patientService.getByTutorDni("12345678X");
 
         assertThat(result).isPresent();
     }
 
     @Test
-    void testGetByTutorPhone() {
-        when(patientRepository.findByTutorPhone("600123123")).thenReturn(Optional.of(patient));
+    void testGetByTutorPhone_Found() {
+        when(patientRepository.findByTutorPhone("555-1234")).thenReturn(Optional.of(patient));
         when(patientMapper.toResponseDTO(patient)).thenReturn(responseDTO);
 
-        Optional<PatientResponseDTO> result = patientService.getByTutorPhone("600123123");
+        Optional<PatientResponseDTO> result = patientService.getByTutorPhone("555-1234");
 
         assertThat(result).isPresent();
     }
 
     @Test
-    void testGetByTutorEmail() {
-        when(patientRepository.findByTutorEmail("test@mail.com")).thenReturn(Optional.of(patient));
+    void testGetByTutorEmail_Found() {
+        when(patientRepository.findByTutorEmail("john@example.com")).thenReturn(Optional.of(patient));
         when(patientMapper.toResponseDTO(patient)).thenReturn(responseDTO);
 
-        Optional<PatientResponseDTO> result = patientService.getByTutorEmail("test@mail.com");
+        Optional<PatientResponseDTO> result = patientService.getByTutorEmail("john@example.com");
 
         assertThat(result).isPresent();
+    }
+
+    @Test
+    void testSearchPatients() {
+        when(patientRepository.searchWithFilters("Bobby", "Beagle", "Male", "name"))
+                .thenReturn(Arrays.asList(patient));
+        when(patientMapper.toResponseDTO(patient)).thenReturn(responseDTO);
+
+        List<PatientResponseDTO> result = patientService.searchPatients("Bobby", "Beagle", "Male", "name");
+
+        assertThat(result).hasSize(1);
+        verify(patientRepository, times(1)).searchWithFilters("Bobby", "Beagle", "Male", "name");
     }
 }

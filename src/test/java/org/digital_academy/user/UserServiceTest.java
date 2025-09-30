@@ -1,106 +1,178 @@
 package org.digital_academy.user;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
+import org.digital_academy.user.UserEntity;
+import org.digital_academy.user.UserRepository;
+import org.digital_academy.user.UserService;
+import org.digital_academy.user.dto.UserRequestDTO;
+import org.digital_academy.user.dto.UserResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class UserServiceTest {
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserService userService;
 
+    private UserEntity userEntity;
+    private UserRequestDTO requestDTO;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        userEntity = new UserEntity();
+        userEntity.setId(1L);
+        userEntity.setName("John Doe");
+        userEntity.setEmail("john@example.com");
+        userEntity.setDni("12345678X");
+        userEntity.setPhone("555-1234");
+        userEntity.setPassword("encodedPassword");
+
+        requestDTO = UserRequestDTO.builder()
+                .name("John Doe")
+                .email("john@example.com")
+                .dni("12345678X")
+                .phone("555-1234")
+                .password("password123")
+                .build();
     }
 
     @Test
-    void getAllUsers_ReturnsListOfUsers() {
-        // given
-        UserEntity user1 = UserEntity.builder()
-                .id(1L).username("alice").password("secret").roles(Set.of("USER"))
-                .build();
-        UserEntity user2 = UserEntity.builder()
-                .id(2L).username("bob").password("pass").roles(Set.of("ADMIN"))
-                .build();
+    void testGetAllUsers() {
+        when(userRepository.findAll()).thenReturn(Arrays.asList(userEntity));
 
-        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
+        List<UserResponseDTO> result = userService.getAllUsers();
 
-        // when
-        List<UserEntity> users = userService.getAllUsers();
-
-        // then
-        assertEquals(2, users.size());
-        assertEquals("alice", users.get(0).getUsername());
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getEmail()).isEqualTo("john@example.com");
         verify(userRepository, times(1)).findAll();
     }
 
     @Test
-    void getUserById_UserExists_ReturnsOptionalUser() {
-        // given
-        UserEntity user = UserEntity.builder()
-                .id(1L).username("alice").password("secret").roles(Set.of("USER"))
-                .build();
+    void testGetUserById_Found() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        Optional<UserResponseDTO> result = userService.getUserById(1L);
 
-        // when
-        Optional<UserEntity> result = userService.getUserById(1L);
-
-        // then
-        assertTrue(result.isPresent());
-        assertEquals("alice", result.get().getUsername());
-        verify(userRepository).findById(1L);
+        assertThat(result).isPresent();
+        assertThat(result.get().getEmail()).isEqualTo("john@example.com");
     }
 
     @Test
-    void getUserById_UserDoesNotExist_ReturnsEmptyOptional() {
+    void testGetUserById_NotFound() {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
-        Optional<UserEntity> result = userService.getUserById(99L);
+        Optional<UserResponseDTO> result = userService.getUserById(99L);
 
-        assertTrue(result.isEmpty());
-        verify(userRepository).findById(99L);
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void createUser_SavesAndReturnsUser() {
-        // given
-        UserEntity user = UserEntity.builder()
-                .username("alice").password("secret").roles(Set.of("USER"))
-                .build();
+    void testGetByEmail_Found() {
+        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(userEntity));
 
-        when(userRepository.save(user)).thenReturn(user);
+        Optional<UserResponseDTO> result = userService.getByEmail("john@example.com");
 
-        // when
-        UserEntity created = userService.createUser(user);
-
-        // then
-        assertEquals("alice", created.getUsername());
-        verify(userRepository).save(user);
+        assertThat(result).isPresent();
+        assertThat(result.get().getEmail()).isEqualTo("john@example.com");
     }
 
     @Test
-    void deleteUser_DeletesById() {
-        // when
+    void testGetByEmail_NotFound() {
+        when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
+
+        Optional<UserResponseDTO> result = userService.getByEmail("notfound@example.com");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void testCreateUser_WithPhoto() throws IOException {
+        MockMultipartFile photo = new MockMultipartFile(
+                "photo",
+                "photo.jpg",
+                "image/jpeg",
+                "fake-image".getBytes());
+
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+        when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
+
+        UserResponseDTO result = userService.createUser(requestDTO, photo);
+
+        assertThat(result.getEmail()).isEqualTo("john@example.com");
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+        verify(passwordEncoder, times(1)).encode("password123");
+    }
+
+    @Test
+    void testCreateUser_WithoutPassword_ThrowsException() throws IOException {
+        requestDTO.setPassword(null);
+
+        try {
+            userService.createUser(requestDTO, null);
+        } catch (RuntimeException e) {
+            assertThat(e.getMessage()).isEqualTo("La contraseña no puede estar vacía");
+        }
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateUser_WithPhoto() throws IOException {
+        MockMultipartFile photo = new MockMultipartFile(
+                "photo",
+                "photo.jpg",
+                "image/jpeg",
+                "fake-image".getBytes());
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+        when(passwordEncoder.encode(any())).thenReturn("newEncodedPassword");
+        when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
+
+        Optional<UserResponseDTO> result = userService.updateUser(1L, requestDTO, photo);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getEmail()).isEqualTo("john@example.com");
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+        verify(passwordEncoder, times(1)).encode("password123");
+    }
+
+    @Test
+    void testUpdateUser_NotFound() throws IOException {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        Optional<UserResponseDTO> result = userService.updateUser(99L, requestDTO, null);
+
+        assertThat(result).isEmpty();
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testDeleteUser() {
+        doNothing().when(userRepository).deleteById(1L);
+
         userService.deleteUser(1L);
 
-        // then
-        verify(userRepository).deleteById(1L);
+        verify(userRepository, times(1)).deleteById(1L);
     }
 }

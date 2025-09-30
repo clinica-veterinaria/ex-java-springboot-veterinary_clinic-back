@@ -20,139 +20,177 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 @Import(SecurityConfig.class)
 @WebMvcTest(PatientController.class)
 class PatientControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @MockBean
-    private PatientService patientService;
+        @MockBean
+        private PatientService patientService;
 
-    private PatientRequestDTO sampleRequest() {
-        return PatientRequestDTO.builder()
-                .name("Bobby")
-                .age(3)
-                .breed("Labrador")
-                .gender("Male")
-                .petIdentification("PET123")
-                .tutorName("Alice Smith")
-                .tutorDni("12345678A")
-                .tutorPhone("600123456")
-                .tutorEmail("alice@example.com")
-                .build();
-    }
+        private PatientRequestDTO sampleRequest() {
+                return PatientRequestDTO.builder()
+                                .name("Bobby")
+                                .age(3)
+                                .breed("Labrador")
+                                .gender("Male")
+                                .petIdentification("PET123")
+                                .tutorName("Alice Smith")
+                                .tutorDni("12345678A")
+                                .tutorPhone("600123456")
+                                .tutorEmail("alice@example.com")
+                                .build();
+        }
 
-    private PatientResponseDTO sampleResponse(Long id) {
-        return PatientResponseDTO.builder()
-                .id(id)
-                .name("Bobby")
-                .age(3)
-                .breed("Labrador")
-                .gender("Male")
-                .petIdentification("PET123")
-                .tutorName("Alice Smith")
-                .tutorDni("12345678A")
-                .tutorPhone("600123456")
-                .tutorEmail("alice@example.com")
-                .build();
-    }
+        private PatientResponseDTO sampleResponse(Long id) {
+                return PatientResponseDTO.builder()
+                                .id(id)
+                                .name("Bobby")
+                                .age(3)
+                                .breed("Labrador")
+                                .gender("Male")
+                                .petIdentification("PET123")
+                                .tutorName("Alice Smith")
+                                .tutorDni("12345678A")
+                                .tutorPhone("600123456")
+                                .tutorEmail("alice@example.com")
+                                .build();
+        }
 
-    @Test
-    void testGetAllPatients() throws Exception {
-        when(patientService.getAllPatients())
-                .thenReturn(List.of(sampleResponse(1L), sampleResponse(2L)));
+        @Test
+        void testGetAllPatients() throws Exception {
+                when(patientService.getAllPatients())
+                                .thenReturn(List.of(sampleResponse(1L), sampleResponse(2L)));
 
-        mockMvc.perform(get("/patients").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
-    }
+                mockMvc.perform(get("/patients").contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.length()").value(2));
+        }
 
-    @Test
-    void testCreatePatient() throws Exception {
-        when(patientService.createPatient(any(PatientRequestDTO.class)))
-                .thenReturn(sampleResponse(1L));
+        @Test
+        void testCreatePatient() throws Exception {
+                // Створюємо request DTO
+                PatientRequestDTO requestDTO = PatientRequestDTO.builder()
+                                .name("Bobby")
+                                .age(3)
+                                .breed("Beagle")
+                                .gender("Male")
+                                .tutorName("John")
+                                .tutorDni("12345678X")
+                                .tutorPhone("555-1234")
+                                .tutorEmail("john@example.com")
+                                .build();
 
-        mockMvc.perform(post("/patients")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(sampleRequest())))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Bobby"));
-    }
+                // Створюємо mock response
+                PatientResponseDTO responseDTO = PatientResponseDTO.builder()
+                                .id(1L)
+                                .name("Bobby")
+                                .petIdentification("PET-12345678")
+                                .build();
 
-    @Test
-    void testGetPatientById_Found() throws Exception {
-        when(patientService.getPatientById(1L)).thenReturn(Optional.of(sampleResponse(1L)));
+                // Мокаємо сервіс
+                when(patientService.createPatient(any(PatientRequestDTO.class), any()))
+                                .thenReturn(responseDTO);
 
-        mockMvc.perform(get("/patients/1").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
-    }
+                // Фейковий файл
+                MockMultipartFile imageFile = new MockMultipartFile(
+                                "image",
+                                "photo.jpg",
+                                MediaType.IMAGE_JPEG_VALUE,
+                                "fake-image-content".getBytes());
 
-    @Test
-    void testUpdatePatient() throws Exception {
-        when(patientService.updatePatient(any(Long.class), any(PatientRequestDTO.class)))
-                .thenReturn(Optional.of(sampleResponse(1L)));
+                // JSON частина
+                MockMultipartFile patientJson = new MockMultipartFile(
+                                "patient",
+                                "",
+                                MediaType.APPLICATION_JSON_VALUE,
+                                objectMapper.writeValueAsBytes(requestDTO));
 
-        mockMvc.perform(put("/patients/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(sampleRequest())))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
-    }
+                // Виконуємо multipart-запит
+                mockMvc.perform(multipart("/patients")
+                                .file(patientJson)
+                                .file(imageFile)
+                                .contentType(MediaType.MULTIPART_FORM_DATA))
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.id").value(1L))
+                                .andExpect(jsonPath("$.name").value("Bobby"))
+                                .andExpect(jsonPath("$.petIdentification").value("PET-12345678"));
+        }
 
-    @Test
-    void testDeletePatient() throws Exception {
-        doNothing().when(patientService).deletePatient(1L);
+        @Test
+        void testGetPatientById_Found() throws Exception {
+                when(patientService.getPatientById(1L)).thenReturn(Optional.of(sampleResponse(1L)));
 
-        mockMvc.perform(delete("/patients/1"))
-                .andExpect(status().isOk());
-    }
+                mockMvc.perform(get("/patients/1").contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(1L));
+        }
 
-    @Test
-    void testGetByPetIdentification() throws Exception {
-        when(patientService.getByPetIdentification("PET123"))
-                .thenReturn(Optional.of(sampleResponse(1L)));
+        @Test
+        void testUpdatePatient() throws Exception {
+                when(patientService.updatePatient(any(Long.class), any(PatientRequestDTO.class)))
+                                .thenReturn(Optional.of(sampleResponse(1L)));
 
-        mockMvc.perform(get("/patients/petIdentification/PET123"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
-    }
+                mockMvc.perform(put("/patients/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(sampleRequest())))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(1L));
+        }
 
-    @Test
-    void testGetByTutorDni() throws Exception {
-        when(patientService.getByTutorDni("12345678A"))
-                .thenReturn(Optional.of(sampleResponse(1L)));
+        @Test
+        void testDeletePatient() throws Exception {
+                doNothing().when(patientService).deletePatient(1L);
 
-        mockMvc.perform(get("/patients/tutorDni/12345678A"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
-    }
+                mockMvc.perform(delete("/patients/1"))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    void testGetByTutorPhone() throws Exception {
-        when(patientService.getByTutorPhone("600123456"))
-                .thenReturn(Optional.of(sampleResponse(1L)));
+        @Test
+        void testGetByPetIdentification() throws Exception {
+                when(patientService.getByPetIdentification("PET123"))
+                                .thenReturn(Optional.of(sampleResponse(1L)));
 
-        mockMvc.perform(get("/patients/tutorPhone/600123456"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
-    }
+                mockMvc.perform(get("/patients/petIdentification/PET123"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(1L));
+        }
 
-    @Test
-    void testGetByTutorEmail() throws Exception {
-        when(patientService.getByTutorEmail("alice@example.com"))
-                .thenReturn(Optional.of(sampleResponse(1L)));
+        @Test
+        void testGetByTutorDni() throws Exception {
+                when(patientService.getByTutorDni("12345678A"))
+                                .thenReturn(Optional.of(sampleResponse(1L)));
 
-        mockMvc.perform(get("/patients/tutorEmail/alice@example.com"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
-    }
+                mockMvc.perform(get("/patients/tutorDni/12345678A"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(1L));
+        }
+
+        @Test
+        void testGetByTutorPhone() throws Exception {
+                when(patientService.getByTutorPhone("600123456"))
+                                .thenReturn(Optional.of(sampleResponse(1L)));
+
+                mockMvc.perform(get("/patients/tutorPhone/600123456"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(1L));
+        }
+
+        @Test
+        void testGetByTutorEmail() throws Exception {
+                when(patientService.getByTutorEmail("alice@example.com"))
+                                .thenReturn(Optional.of(sampleResponse(1L)));
+
+                mockMvc.perform(get("/patients/tutorEmail/alice@example.com"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(1L));
+        }
 }
