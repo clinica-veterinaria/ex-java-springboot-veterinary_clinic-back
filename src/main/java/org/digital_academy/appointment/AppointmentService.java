@@ -30,6 +30,33 @@ public class AppointmentService {
     private final EmailService emailService;
     private final PatientRepository patientRepository;
 
+    public List<Appointment> searchAndFilterAppointments(
+        String search, 
+        String type, 
+        String status, 
+        String sortBy
+    ) {
+        
+        List<Appointment> appointments = appointmentRepository.searchWithFilters(
+            search, 
+            type, 
+            status, 
+            sortBy 
+        );
+
+       
+        if (sortBy != null && sortBy.equalsIgnoreCase("fecha")) {
+            appointments.sort(
+                (a1, a2) -> {
+                    return a1.getAppointmentDatetime().compareTo(a2.getAppointmentDatetime());
+                }
+            );
+        }
+
+        return appointments;
+    }
+    
+
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
@@ -214,5 +241,7 @@ public class AppointmentService {
             .tutorEmail(appointment.getPatient().getTutorEmail())
             .build();
 }
+
+
 
 }
