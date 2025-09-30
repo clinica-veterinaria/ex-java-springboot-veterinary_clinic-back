@@ -32,20 +32,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desactiva CSRF (útil para Swagger y pruebas)
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // 🔑 muy importante: permitir preflight
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Rutas públicas
-                .requestMatchers("/auth/**", "/error", "/appointments/**", "/patients/**","/treatments/**","/users/**",
-                             "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // Rutas protegidas
-                // .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
+                // Solo login y registro públicos
+                .requestMatchers("/auth/**", "/error").permitAll()
+                // Endpoints solo para ADMIN
+                .requestMatchers("/appointments/**", "/treatments/**").hasRole("ADMIN")
+                // Endpoints para ADMIN y USER
+                .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
                 // Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form.disable()) // Desactiva formulario de login por defecto
-            .httpBasic(Customizer.withDefaults()) // Permite autenticación básica
+            .formLogin(form -> form.disable())
+            .httpBasic(Customizer.withDefaults())
             .logout(logout -> logout.permitAll());
 
         return http.build();
