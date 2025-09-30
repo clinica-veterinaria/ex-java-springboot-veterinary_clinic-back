@@ -1,6 +1,9 @@
 package org.digital_academy.treatment;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import org.digital_academy.config.SecurityConfig;
 import org.digital_academy.patient.Patient;
@@ -9,23 +12,19 @@ import org.digital_academy.treatment.dto.TreatmentRequestDTO;
 import org.digital_academy.treatment.dto.TreatmentResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(TreatmentController.class)
 @Import(SecurityConfig.class)
@@ -37,13 +36,13 @@ class TreatmentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private TreatmentRepository treatmentRepository;
 
-    @MockBean
+    @MockitoBean
     private PatientRepository patientRepository;
 
-    @MockBean
+    @MockitoBean
     private TreatmentMapper treatmentMapper;
 
     private Patient patient;
