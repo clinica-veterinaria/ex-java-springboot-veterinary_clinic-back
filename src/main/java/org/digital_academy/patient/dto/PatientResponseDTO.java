@@ -10,7 +10,7 @@ public class PatientResponseDTO {
 
     private Long id;
     private String name;
-    private Integer age;
+    private int age;
     private String breed;
     private String gender;
     private String petIdentification;
@@ -18,4 +18,5 @@ public class PatientResponseDTO {
     private String tutorDni;
     private String tutorPhone;
     private String tutorEmail;
+    private String photo;
 }

@@ -19,7 +19,7 @@ public class UserEntity {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String username;
+    private String username; 
 
     @Column(nullable = false)
     private String password;
@@ -28,4 +28,18 @@ public class UserEntity {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     private Set<String> roles;
+
+    private String name; 
+
+    @Column(unique = true)
+    private String dni; 
+
+    @Column(unique = true) 
+    private String email; 
+    
+    private String telefono; 
+    
+    @Lob 
+    @Column(name = "image", columnDefinition = "LONGBLOB") 
+    private byte[] image; 
 }

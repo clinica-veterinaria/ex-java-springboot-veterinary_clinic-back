@@ -9,6 +9,11 @@ public class PatientMapper {
 
     public PatientResponseDTO toResponseDTO(Patient patient) {
         if (patient == null) return null;
+         String photoBase64 = null;
+
+        if (patient.getImage() != null) {
+            photoBase64 = java.util.Base64.getEncoder().encodeToString(patient.getImage());
+        }
 
         return PatientResponseDTO.builder()
                 .id(patient.getId())
@@ -21,6 +26,7 @@ public class PatientMapper {
                 .tutorDni(patient.getTutorDni())
                 .tutorPhone(patient.getTutorPhone())
                 .tutorEmail(patient.getTutorEmail())
+                .photo(photoBase64)
                 .build();
     }
 

@@ -9,7 +9,7 @@ import lombok.*;
 public class PatientRequestDTO {
 
     private String name;
-    private Integer age;
+    private int age;
     private String breed;
     private String gender;
     private String petIdentification;

@@ -1,20 +1,24 @@
 package org.digital_academy.appointment;
 
-import jakarta.mail.MessagingException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.digital_academy.appointment.dto.AppointmentResponseDto;
 import org.digital_academy.patient.Patient;
+import org.digital_academy.patient.PatientRepository;
 import org.digital_academy.util.EmailService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.digital_academy.patient.PatientRepository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Service
@@ -25,6 +29,13 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final EmailService emailService;
     private final PatientRepository patientRepository;
+
+    public List<AppointmentResponseDto> searchAppointments(String search, String type, String status, String sortBy) {
+    List<Appointment> appointments = appointmentRepository.searchWithFilters(search, type, status, sortBy);
+    return appointments.stream()
+            .map(this::mapToResponseDto)
+            .toList();
+    }
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
@@ -37,6 +48,45 @@ public class AppointmentService {
     public List<Appointment> getAppointmentsByPatient(Long patientId) {
         return appointmentRepository.findByPatientId(patientId);
     }
+
+    public List<Appointment> getUpcomingAppointments(int limit) {
+        return appointmentRepository.findByAppointmentDatetimeAfterOrderByAppointmentDatetimeAsc(
+            LocalDateTime.now(),
+            PageRequest.of(0, limit)
+        );
+    }
+
+    public List<Appointment> getAppointmentsByDate(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        return appointmentRepository.findByAppointmentDatetimeBetween(startOfDay, endOfDay);
+    }
+
+    public List<String> getAvailableSlotsForDate(LocalDate date) {
+        LocalTime startTime = LocalTime.of(9, 0);
+        LocalTime endTime = LocalTime.of(17, 0);
+        int slotDurationMinutes = 20;
+
+        List<String> allSlots = new ArrayList<>();
+        LocalTime currentTime = startTime;
+        while (currentTime.isBefore(endTime)) {
+            allSlots.add(currentTime.toString());
+            currentTime = currentTime.plusMinutes(slotDurationMinutes);
+        }
+
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+        List<Appointment> existingAppointments = appointmentRepository.findByAppointmentDatetimeBetween(startOfDay, endOfDay);
+
+        List<String> occupiedSlots = existingAppointments.stream()
+                .map(a -> a.getAppointmentDatetime().toLocalTime().toString())
+                .collect(Collectors.toList());
+
+        return allSlots.stream()
+                .filter(slot -> !occupiedSlots.contains(slot))
+                .collect(Collectors.toList());
+    }
+    
 
     public Appointment createAppointment(Appointment appointment) {
         validateAppointment(appointment);

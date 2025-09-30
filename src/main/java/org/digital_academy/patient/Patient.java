@@ -22,7 +22,7 @@ public class Patient {
     private String name;
 
     @Column(nullable = false)
-    private Integer age;
+    private int age;
 
     private String breed;
 
@@ -44,7 +44,7 @@ public class Patient {
     private String tutorEmail;
 
     @Lob
-    @Column(name = "image")
+    @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] image;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
