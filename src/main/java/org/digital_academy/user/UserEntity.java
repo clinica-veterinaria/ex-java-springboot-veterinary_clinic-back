@@ -29,17 +29,17 @@ public class UserEntity {
     @Column(name = "role")
     private Set<String> roles;
 
-    private String name; 
+    private String name;
 
     @Column(unique = true)
-    private String dni; 
+    private String dni;
 
-    @Column(unique = true) 
-    private String email; 
-    
-    private String telefono; 
-    
-    @Lob 
-    @Column(name = "image", columnDefinition = "LONGBLOB") 
-    private byte[] image; 
+    @Column(unique = true)
+    private String email;
+
+    private String phone; // unificado con DTO
+
+    @Lob
+    @Column(name = "photo", columnDefinition = "LONGBLOB") // unificado con DTO
+    private byte[] photo;
 }

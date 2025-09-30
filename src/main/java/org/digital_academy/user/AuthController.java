@@ -24,8 +24,8 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     public AuthController(UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager) {
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -35,7 +35,7 @@ public class AuthController {
     @PostMapping(value = "/register", consumes = { "multipart/form-data" })
     public ResponseEntity<?> register(
             @RequestPart("userData") String userDataJson,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen) throws IOException {
+            @RequestPart(value = "photo", required = false) MultipartFile photoFile) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         RegisterRequest request;
@@ -45,6 +45,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("⚠️ Formato de datos de usuario inválido.");
         }
 
+        // Usamos email como username
         request.setUsername(request.getEmail());
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -63,10 +64,10 @@ public class AuthController {
         user.setName(request.getName());
         user.setDni(request.getDni());
         user.setEmail(request.getEmail());
-        user.setTelefono(request.getTelefono());
+        user.setPhone(request.getPhone()); // unificado con DTO
 
-        if (imagen != null && !imagen.isEmpty()) {
-            user.setImage(imagen.getBytes());
+        if (photoFile != null && !photoFile.isEmpty()) {
+            user.setPhoto(photoFile.getBytes()); // unificado con DTO
         }
 
         userRepository.save(user);
@@ -88,11 +89,9 @@ public class AuthController {
         }
     }
 
-    // ✅ Logout (stateless, solo para frontend o para limpiar cookies/sesión)
+    // ✅ Logout (stateless)
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
-        // Si usas JWT, el logout es responsabilidad del frontend (borrar token)
-        // Aquí solo devuelves un mensaje de éxito
         return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
     }
 }
