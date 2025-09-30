@@ -88,8 +88,8 @@ public class PatientService {
                 .map(patientMapper::toResponseDTO);
     }
 
-    public List<PatientResponseDTO> searchPatients(String search, String species, String gender, String sortBy) {
-        List<Patient> patients = patientRepository.searchWithFilters(search, species, gender, sortBy);
+    public List<PatientResponseDTO> searchPatients(String search, String breed, String gender, String sortBy) {
+        List<Patient> patients = patientRepository.searchWithFilters(search, breed, gender, sortBy);
         return patients.stream()
                 .map(patientMapper::toResponseDTO)
                 .collect(Collectors.toList());

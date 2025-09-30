@@ -28,20 +28,20 @@ public class PatientController {
    @GetMapping
     public List<PatientResponseDTO> listarPatients(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String species,
+            @RequestParam(required = false) String breed,
             @RequestParam(required = false) String gender,
             @RequestParam(required = false) String sortBy
     ) {
         // Si no hay parámetros, devuelve todos
         if ((search == null || search.isEmpty()) && 
-            (species == null || species.isEmpty()) && 
+            (breed == null || breed.isEmpty()) && 
             (gender == null || gender.isEmpty()) &&
             (sortBy == null || sortBy.isEmpty())) {
             return patientService.getAllPatients();
         }
         
         // Si hay parámetros, busca con filtros
-        return patientService.searchPatients(search, species, gender, sortBy);
+        return patientService.searchPatients(search, breed, gender, sortBy);
     
     }
 
