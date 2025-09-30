@@ -30,13 +30,6 @@ public class AppointmentService {
     private final EmailService emailService;
     private final PatientRepository patientRepository;
 
-    public List<AppointmentResponseDto> searchAppointments(String search, String type, String status, String sortBy) {
-    List<Appointment> appointments = appointmentRepository.searchWithFilters(search, type, status, sortBy);
-    return appointments.stream()
-            .map(this::mapToResponseDto)
-            .toList();
-    }
-
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }

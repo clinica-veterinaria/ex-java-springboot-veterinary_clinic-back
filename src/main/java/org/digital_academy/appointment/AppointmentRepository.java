@@ -21,6 +21,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByAppointmentDatetimeAfterOrderByAppointmentDatetimeAsc(LocalDateTime dateTime, Pageable pageable);
     
 
+
     @Query("SELECT a FROM Appointment a LEFT JOIN a.patient p WHERE " +
             "(:search IS NULL OR :search = '' OR " +
             "LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
@@ -35,3 +36,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             @Param("sortBy") String sortBy);
 
 }
+
+
+
