@@ -34,13 +34,13 @@ public class Patient {
     @Column(nullable = false)
     private String tutorName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String tutorDni;
 
     @Column(nullable = false)
     private String tutorPhone;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String tutorEmail;
 
     @Lob
