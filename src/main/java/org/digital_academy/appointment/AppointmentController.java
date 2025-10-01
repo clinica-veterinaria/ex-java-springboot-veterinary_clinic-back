@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,9 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final PatientRepository patientRepository;
+
+
+    @PreAuthorize("hasRole('ADMIN')")
 
     @PostMapping
     public ResponseEntity<AppointmentResponseDto> createAppointment(
@@ -53,6 +58,8 @@ public class AppointmentController {
 
         return ResponseEntity.status(201).body(response);
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
 
     @GetMapping
     public ResponseEntity<List<AppointmentResponseDto>> getAllAppointments(
@@ -81,6 +88,11 @@ public class AppointmentController {
         return ResponseEntity.ok(response);
     }
 
+
+
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponseDto> getAppointmentById(@PathVariable Long id) {
         return appointmentService.getAppointmentById(id)
@@ -89,6 +101,11 @@ public class AppointmentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
+
+
+        @PreAuthorize("hasAnyRole('ADMIN','USER')")
+
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@PathVariable Long patientId) {
         List<AppointmentResponseDto> response = appointmentService.getAppointmentsByPatient(patientId).stream()
@@ -96,6 +113,9 @@ public class AppointmentController {
                 .toList();
         return ResponseEntity.ok(response);
     }
+
+
+        @PreAuthorize("hasAnyRole('ADMIN','USER')")
 
     @GetMapping("/upcoming")
     public ResponseEntity<Map<String, List<AppointmentResponseDto>>> getUpcomingAppointments(
@@ -107,6 +127,10 @@ public class AppointmentController {
         return ResponseEntity.ok(Map.of("appointments", upcomingAppointments));
     }
 
+
+
+        @PreAuthorize("hasAnyRole('ADMIN','USER')")
+
     @GetMapping("/disponibles")
     public ResponseEntity<Map<String, List<String>>> getAvailableSlots(@RequestParam String fecha) {
         LocalDate date = LocalDate.parse(fecha);
@@ -114,6 +138,10 @@ public class AppointmentController {
 
         return ResponseEntity.ok(Map.of("slots", availableSlots));
     }
+
+
+
+        @PreAuthorize("hasAnyRole('ADMIN','USER')")
 
     @GetMapping("/by-date")
     public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByDate(
@@ -127,6 +155,10 @@ public class AppointmentController {
 
         return ResponseEntity.ok(response);
     }
+
+
+
+        @PreAuthorize("hasRole('ADMIN')")
 
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentResponseDto> updateAppointment(@PathVariable Long id,
@@ -146,6 +178,10 @@ public class AppointmentController {
         Appointment saved = appointmentService.updateAppointment(id, updated);
         return ResponseEntity.ok(appointmentService.mapToResponseDto(saved));
     }
+
+
+
+        @PreAuthorize("hasRole('ADMIN')")
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiMessageDto> cancelAppointment(@PathVariable Long id) {

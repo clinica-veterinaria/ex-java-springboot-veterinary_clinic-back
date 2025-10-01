@@ -7,6 +7,7 @@ import org.digital_academy.treatment.dto.TreatmentResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,11 @@ public class TreatmentController {
         this.treatmentMapper = treatmentMapper;
     }
 
+
+
+
     // Crear un tratamiento
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<TreatmentResponseDTO> createTreatment(@RequestBody TreatmentRequestDTO requestDTO) {
         Patient patient = patientRepository.findById(requestDTO.getPatientId())
@@ -40,6 +45,7 @@ public class TreatmentController {
     }
 
     // Historial de un paciente
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<TreatmentResponseDTO>> getTreatmentsByPatient(@PathVariable Long patientId) {
         List<TreatmentResponseDTO> list = treatmentRepository.findByPatientId(patientId)
@@ -50,6 +56,7 @@ public class TreatmentController {
     }
 
     // Todos los tratamientos
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<TreatmentResponseDTO>> getAllTreatments() {
         List<TreatmentResponseDTO> list = treatmentRepository.findAll()
