@@ -63,22 +63,22 @@ public class SecurityConfig {
     // Configuración de seguridad unificada
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-         http
-        .cors(Customizer.withDefaults())
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**", "/error", "/test/**").permitAll()
-            .requestMatchers("/appointments/**", "/treatments/**").hasAuthority("ADMIN")
-            .requestMatchers("/patients/**").hasAnyAuthority("ADMIN", "USER")
-            .anyRequest().authenticated())
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            .maximumSessions(1))
-        .authenticationProvider(authenticationProvider())
-        .formLogin(form -> form.disable())
-        .logout(logout -> logout.permitAll());
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**", "/error", "/test/**", "/appointments/**").permitAll()
+                        .requestMatchers("/appointments/**", "/treatments/**").hasAuthority("ADMIN")
+                        .requestMatchers("/patients/**").hasAnyAuthority("ADMIN", "USER")
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .maximumSessions(1))
+                .authenticationProvider(authenticationProvider())
+                .formLogin(form -> form.disable())
+                .logout(logout -> logout.permitAll());
 
-    return http.build();
+        return http.build();
     }
 
 }
