@@ -75,7 +75,7 @@ public class AuthControllerTest {
         @Test
         void testLogin_Success() throws Exception {
                 LoginRequest request = new LoginRequest();
-                request.setUsername("test@example.com");
+                request.setEmail("test@example.com");
                 request.setPassword("secret");
 
                 Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
@@ -91,7 +91,7 @@ public class AuthControllerTest {
         @Test
         void testLogin_Failure() throws Exception {
                 LoginRequest request = new LoginRequest();
-                request.setUsername("wrong@example.com");
+                request.setEmail("wrong@example.com");
                 request.setPassword("bad");
 
                 Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))

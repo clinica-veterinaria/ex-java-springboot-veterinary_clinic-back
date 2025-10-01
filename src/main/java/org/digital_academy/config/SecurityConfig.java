@@ -1,6 +1,5 @@
 package org.digital_academy.config;
 
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.User;
 import org.digital_academy.user.UserRepository;
@@ -11,7 +10,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,17 +42,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return email -> userRepository.findByEmail(email)
-                .map(user -> User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities(user.getRoles().stream()
-                                .map(SimpleGrantedAuthority::new)
-                                .collect(Collectors.toList()))
-                        .build())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
-    }
+public UserDetailsService userDetailsService() {
+    return email -> userRepository.findByEmail(email)
+        .map(user -> User
+            .withUsername(user.getEmail())
+            .password(user.getPassword())
+            .authorities(user.getRoles().toArray(new String[0]))  
+            .build())
+        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+}
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -70,8 +66,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Solo login y registro públicos
-                        .requestMatchers("/auth/**", "/error").permitAll()
+                    .requestMatchers("/auth/**", "/error", "/test/**").permitAll()
                         // Endpoints solo para ADMIN
                         .requestMatchers("/appointments/**", "/treatments/**").hasRole("ADMIN")
                         // Endpoints para ADMIN y USER
