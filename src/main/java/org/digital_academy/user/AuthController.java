@@ -1,18 +1,23 @@
 package org.digital_academy.user;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -78,18 +83,96 @@ public class AuthController {
     // ✅ Login con validación
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        System.out.println("===========================================");
+        System.out.println("=== LOGIN ATTEMPT ===");
+        System.out.println("📧 Email recibido: " + request.getEmail());
+        System.out.println("🔑 Password recibida: " + request.getPassword());
+
     try {
+       /* authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getEmail(),
+                request.getPassword()
+            )
+        );*/ 
+
+        UserEntity user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> {
+                    System.out.println("❌ Usuario NO encontrado en BD");
+                    return new RuntimeException("Usuario no encontrado");
+                });
+
+            System.out.println("✅ Usuario encontrado: " + user.getEmail());
+            System.out.println("🔐 Password en BD (hash): " + user.getPassword());
+            System.out.println("👤 Roles del usuario: " + user.getRoles());
+
+            System.out.println("🔄 Intentando autenticar con AuthenticationManager...");
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
                 request.getPassword()
             )
         );
+        
+        System.out.println("✅✅✅ Autenticación EXITOSA!");
 
-        UserEntity user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        String role = user.getRoles().isEmpty() 
+            ? "USER" 
+            : user.getRoles().iterator().next().toString();
+        
+        System.out.println("🎯 Role devuelto: " + role);
+        System.out.println("===========================================");
 
-        // Obtener el primer rol
+        return ResponseEntity.ok(Map.of(
+            "message", "✅ Login exitoso",
+            "role", role,
+            "user", Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail()
+            )
+        ));
+        
+    } catch (BadCredentialsException e) {
+        System.out.println("❌❌❌ BadCredentialsException!");
+        System.out.println("Mensaje: " + e.getMessage());
+        e.printStackTrace();
+        System.out.println("===========================================");
+        return ResponseEntity.status(401)
+            .body(Map.of("error", "Usuario o contraseña incorrectos"));
+    } catch (Exception e) {
+        System.out.println("❌❌❌ Exception general!");
+        System.out.println("Tipo: " + e.getClass().getName());
+        System.out.println("Mensaje: " + e.getMessage());
+        e.printStackTrace();
+        System.out.println("===========================================");
+        return ResponseEntity.status(401)
+            .body(Map.of("error", "Usuario o contraseña incorrectos"));
+    }
+}
+
+    @PostMapping("/test-hash")
+    public ResponseEntity<?> testHash() {
+        String plainPassword = "admin123";
+        String hashed = passwordEncoder.encode(plainPassword);
+        System.out.println("Password en texto plano: " + plainPassword);
+        System.out.println("Password hasheada: " + hashed);
+    
+        String passwordEnBD = "$2a$10$7Q6c7A0VZyN1j8H8vwrNNOiKQqT7HcbMOnm.6Zbsz4PzZQGd1hY8e";
+        boolean matches = passwordEncoder.matches(plainPassword, passwordEnBD);
+
+        System.out.println("¿'admin123' coincide con el hash en BD? " + matches);
+    
+        return ResponseEntity.ok(Map.of(
+        "passwordPlana", plainPassword,
+        "hashNuevo", hashed,
+        "hashEnBD", passwordEnBD,
+        "coincide", matches
+    ));
+}
+}
+
+ /*       // Obtener el primer rol
         String role = user.getRoles().isEmpty() 
             ? "USER" 
             : user.getRoles().iterator().next().toString();
@@ -112,5 +195,4 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
         return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
-    }
-}
+    }*/
