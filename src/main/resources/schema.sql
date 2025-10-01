@@ -3,6 +3,7 @@
 -- =========================================
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) UNIQUE NOT NULL,
     username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL
 );
@@ -10,8 +11,31 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS user_roles (
     user_id BIGINT NOT NULL,
     role VARCHAR(50),
+    PRIMARY KEY (user_id, role),
     CONSTRAINT fk_user_role FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- =========================================
+-- DATOS INICIALES
+-- =========================================
+-- Admin (password: admin123)
+INSERT INTO users (id, username, email, password)
+VALUES (1, 'margarita', 'margarita@oliwa.com', '$2a$10$7Q6c7A0VZyN1j8H8vwrNNOiKQqT7HcbMOnm.6Zbsz4PzZQGd1hY8e')
+ON DUPLICATE KEY UPDATE username=username;
+
+INSERT INTO user_roles (user_id, role)
+VALUES (1, 'ADMIN')
+ON DUPLICATE KEY UPDATE role=role;
+
+-- Usuario de prueba (password: user123)
+INSERT INTO users (id, username, email, password)
+VALUES (2, 'usuario', 'user@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy')
+ON DUPLICATE KEY UPDATE username=username;
+
+INSERT INTO user_roles (user_id, role)
+VALUES (2, 'USER')
+ON DUPLICATE KEY UPDATE role=role;
+
 
 -- =========================================
 -- TABLE PATIENTS
@@ -61,3 +85,5 @@ CREATE INDEX idx_patients_pet_identification ON patients (pet_identification);
 CREATE INDEX idx_patients_tutor_name ON patients (tutor_name);
 CREATE INDEX idx_patients_tutor_dni ON patients (tutor_dni);
 CREATE INDEX idx_appointments_datetime ON appointments (appointment_datetime);
+CREATE INDEX idx_appointments_status ON appointments (status);
+CREATE INDEX idx_treatments_patient_date ON treatments (patient_id, treatment_date);

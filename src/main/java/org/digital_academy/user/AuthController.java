@@ -78,17 +78,36 @@ public class AuthController {
     // ✅ Login con validación
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
-                            request.getPassword()));
-            return ResponseEntity.ok(Map.of("message", "✅ Login exitoso"));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(401).body("❌ Usuario o contraseña incorrectos");
-        }
-    }
+    try {
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getEmail(),
+                request.getPassword()
+            )
+        );
 
+        UserEntity user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Obtener el primer rol
+        String role = user.getRoles().isEmpty() 
+            ? "USER" 
+            : user.getRoles().iterator().next().toString();
+
+        return ResponseEntity.ok(Map.of(
+            "message", "✅ Login exitoso",
+            "role", role,
+            "user", Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail()
+            )
+        ));
+    } catch (BadCredentialsException e) {
+        return ResponseEntity.status(401)
+            .body(Map.of("error", "Usuario o contraseña incorrectos"));
+    }
+}
     // ✅ Logout (stateless)
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
