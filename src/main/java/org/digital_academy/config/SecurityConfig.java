@@ -1,94 +1,91 @@
 package org.digital_academy.config;
 
-import org.digital_academy.user.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.digital_academy.security.JpaUserDetailsService;
 
 @Configuration
-// @EnableMethodSecurity
+@EnableWebSecurity
 public class SecurityConfig {
-    private final UserRepository userRepository;
 
-    public SecurityConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    @Value("${api-endpoint:/api/v1}")
+    String endpoint;
+
+    private final JpaUserDetailsService jpaUserDetailsService;
+
+    public SecurityConfig(JpaUserDetailsService jpaUserDetailsService) {
+        this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(jpaUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .formLogin(form -> form.disable())
+                .httpBasic(httpBasic -> httpBasic.disable()) // ✅ DESACTIVADO
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/logout").permitAll()
+                        .requestMatchers("/auth/debug/**").permitAll() // Temporal para debug
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        // Pacientes
+                        .requestMatchers(HttpMethod.GET, "/patients").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/patients/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/patients").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/patients/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/patients/**").hasAnyRole("USER", "ADMIN")
+
+                        // Citas (AÑADE ESTO)
+                        .requestMatchers(HttpMethod.GET, "/appointments").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/appointments/upcoming").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/appointments/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/appointments").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/appointments/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/appointments/**").hasAnyRole("USER", "ADMIN")
+
+                        // Usuarios
+                        .requestMatchers(HttpMethod.GET, endpoint + "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, endpoint + "/users/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, endpoint + "/users/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, endpoint + "/users/**").hasAnyRole("USER", "ADMIN")
+
+                        .anyRequest().authenticated())
+                .authenticationProvider(authenticationProvider())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+
+        return http.build();
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    // @Bean
-    // public UserDetailsService userDetailsService() {
-    //     return email -> userRepository.findByEmail(email)
-    //             .map(user -> {
-    //                 // DEBUG: Ver qué roles tiene el usuario
-    //                 System.out.println("=== DEBUG USER DETAILS SERVICE ===");
-    //                 System.out.println("🔍 Usuario: " + user.getEmail());
-    //                 System.out.println("🔍 Roles desde BD: " + user.getRoles());
-                    
-    //                 // Convertir roles a autoridades correctamente
-    //                 List<GrantedAuthority> authorities = user.getRoles().stream()
-    //                         .map(role -> {
-    //                             // Asegurar formato ROLE_XXX
-    //                             String authorityName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
-    //                             System.out.println("🔍 Creando autoridad: " + authorityName);
-    //                             return new SimpleGrantedAuthority(authorityName);
-    //                         })
-    //                         .collect(Collectors.toList());
-                    
-    //                 System.out.println("🔍 Autoridades finales: " + authorities);
-    //                 System.out.println("=== FIN DEBUG ===");
-                    
-    //                 return org.springframework.security.core.userdetails.User
-    //                         .withUsername(user.getEmail())
-    //                         .password(user.getPassword())
-    //                         .authorities(authorities)
-    //                         .build();
-    //             })
-    //             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
-    // }
-
-    // @Bean
-    // public AuthenticationProvider authenticationProvider() {
-    //     // ✅ CORRECCIÓN: Pasar UserDetailsService al constructor
-    //     DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService());
-    //     provider.setPasswordEncoder(passwordEncoder());
-    //     return provider;
-    // }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configure(http))
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll() // ← PERMITE TODO TEMPORALMENTE
-            );
-        
-        return http.build();
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

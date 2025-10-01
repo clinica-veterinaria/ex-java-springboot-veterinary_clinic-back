@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.digital_academy.patient.dto.PatientRequestDTO;
 import org.digital_academy.patient.dto.PatientResponseDTO;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
@@ -25,13 +24,19 @@ public class PatientController {
     }
 
     // Listar todos los pacientes
-    // @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public List<PatientResponseDTO> listarPatients(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String breed,
             @RequestParam(required = false) String gender,
             @RequestParam(required = false) String sortBy) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("========== GET /patients ==========");
+        System.out.println("========== GET /patients ==========");
+        System.out.println("Autenticado: " + auth.isAuthenticated());
+        System.out.println("Roles: " + auth.getAuthorities());
+        System.out.println("===================================");
 
         if ((search == null || search.isEmpty()) &&
                 (breed == null || breed.isEmpty()) &&
@@ -44,20 +49,10 @@ public class PatientController {
     }
 
     // Crear nuevo paciente
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PatientResponseDTO> createPatient(
             @RequestPart("patient") PatientRequestDTO requestDTO,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) throws IOException {
-
-        // DEBUG: Verificar autenticación
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("=== DEBUG PATIENT CONTROLLER ===");
-        System.out.println("🔍 Usuario autenticado: " + auth.getName());
-        System.out.println("🔍 Roles/autoridades: " + auth.getAuthorities());
-        System.out.println("🔍 Está autenticado: " + auth.isAuthenticated());
-        System.out.println("🔍 Principal: " + auth.getPrincipal());
-        System.out.println("=== FIN DEBUG ===");
 
         try {
             PatientResponseDTO newPatient = patientService.createPatient(requestDTO, imageFile);
@@ -68,7 +63,6 @@ public class PatientController {
     }
 
     // Obtener paciente por ID
-    // @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{id}")
     public PatientResponseDTO obtenerPatient(@PathVariable Long id) {
         return patientService.getPatientById(id)
@@ -76,7 +70,6 @@ public class PatientController {
     }
 
     // Actualizar paciente
-    // @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
     public PatientResponseDTO actualizarPatient(@PathVariable Long id, @RequestBody PatientRequestDTO requestDTO) {
         return patientService.updatePatient(id, requestDTO)
@@ -84,14 +77,12 @@ public class PatientController {
     }
 
     // Eliminar paciente
-    // @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void eliminarPatient(@PathVariable Long id) {
         patientService.deletePatient(id);
     }
 
     // Buscar por número de identificación del paciente
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/petIdentification/{petIdentification}")
     public PatientResponseDTO getByPetIdentification(@PathVariable String petIdentification) {
         return patientService.getByPetIdentification(petIdentification)
@@ -100,7 +91,6 @@ public class PatientController {
     }
 
     // Buscar por DNI del tutor
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/tutorDni/{tutorDni}")
     public PatientResponseDTO getByTutorDni(@PathVariable String tutorDni) {
         return patientService.getByTutorDni(tutorDni)
@@ -108,7 +98,6 @@ public class PatientController {
     }
 
     // Buscar por teléfono del tutor
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/tutorPhone/{tutorPhone}")
     public PatientResponseDTO getByTutorPhone(@PathVariable String tutorPhone) {
         return patientService.getByTutorPhone(tutorPhone)
@@ -116,7 +105,6 @@ public class PatientController {
     }
 
     // Buscar por email del tutor
-    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/tutorEmail/{tutorEmail}")
     public PatientResponseDTO getByTutorEmail(@PathVariable String tutorEmail) {
         return patientService.getByTutorEmail(tutorEmail)

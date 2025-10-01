@@ -1,18 +1,28 @@
 package org.digital_academy.user;
 
+import org.digital_academy.user.dto.UserRequestDTO;
+import org.digital_academy.user.dto.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -23,93 +33,113 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     public AuthController(UserRepository userRepository,
-                          PasswordEncoder passwordEncoder,
-                          AuthenticationManager authenticationManager) {
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }
 
-    // ✅ Registro de usuarios
     @PostMapping(value = "/register", consumes = { "multipart/form-data" })
     public ResponseEntity<?> register(
             @RequestPart("userData") String userDataJson,
             @RequestPart(value = "photo", required = false) MultipartFile photoFile) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        RegisterRequest request;
-        try {
-            request = objectMapper.readValue(userDataJson, RegisterRequest.class);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body("⚠️ Formato de datos de usuario inválido.");
-        }
+        UserRequestDTO request = objectMapper.readValue(userDataJson, UserRequestDTO.class);
 
-        // Usamos email como username
-        request.setUsername(request.getEmail());
-
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("⚠️ El correo electrónico ya está registrado.");
-        }
-        if (request.getPassword() == null || request.getPassword().isBlank()) {
-            return ResponseEntity.badRequest().body("⚠️ La contraseña no puede ser vacía");
         }
 
         UserEntity user = new UserEntity();
-        user.setUsername(request.getUsername());
+        user.setUsername(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        user.setRoles(Collections.singleton(request.getRole() != null ? request.getRole() : "USER"));
+        // Guardar roles CON prefijo ROLE_ en la BD
+        if ("margarita@oliwa.com".equalsIgnoreCase(request.getEmail())) {
+            user.setRoles(Collections.singleton("ROLE_ADMIN"));
+        } else {
+            user.setRoles(Collections.singleton("ROLE_USER"));
+        }
 
         user.setName(request.getName());
         user.setDni(request.getDni());
         user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone()); // unificado con DTO
+        user.setPhone(request.getPhone());
 
         if (photoFile != null && !photoFile.isEmpty()) {
-            user.setPhoto(photoFile.getBytes()); // unificado con DTO
+            user.setPhoto(photoFile.getBytes());
         }
 
         userRepository.save(user);
-
         return ResponseEntity.ok("✅ Usuario registrado con éxito");
     }
 
-    // ✅ Login con validación
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+public ResponseEntity<?> login(@RequestBody Map<String, String> credentials, HttpServletRequest request) {
     try {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword()
-            )
-        );
+        String email = credentials.get("email");
+        String password = credentials.get("password");
 
-        UserEntity user = userRepository.findByEmail(request.getEmail())
+        System.out.println("========== LOGIN ATTEMPT ==========");
+        System.out.println("Email: " + email);
+
+        // Crear el token de autenticación
+        UsernamePasswordAuthenticationToken authToken = 
+            new UsernamePasswordAuthenticationToken(email, password);
+        
+        // Autenticar
+        Authentication authentication = authenticationManager.authenticate(authToken);
+        
+        // Establecer en el contexto de seguridad
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        
+        // Crear sesión manualmente
+        HttpSession session = request.getSession(true);
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+        
+        System.out.println("✅ Session ID: " + session.getId());
+        System.out.println("✅ Authentication successful!");
+
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Obtener el primer rol
-        String role = user.getRoles().isEmpty() 
-            ? "USER" 
-            : user.getRoles().iterator().next().toString();
+        UserResponseDTO userDTO = UserResponseDTO.fromEntity(user);
+        String roleWithPrefix = user.getRoles().iterator().next();
+        String roleWithoutPrefix = roleWithPrefix.replace("ROLE_", "");
 
         return ResponseEntity.ok(Map.of(
-            "message", "✅ Login exitoso",
-            "role", role,
-            "user", Map.of(
-                "id", user.getId(),
-                "username", user.getUsername(),
-                "email", user.getEmail()
-            )
-        ));
+                "user", userDTO,
+                "role", roleWithoutPrefix));
     } catch (BadCredentialsException e) {
+        System.out.println("❌ Bad credentials!");
         return ResponseEntity.status(401)
-            .body(Map.of("error", "Usuario o contraseña incorrectos"));
+                .body(Map.of("error", "Usuario o contraseña incorrectos"));
     }
 }
-    // ✅ Logout (stateless)
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
         return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
     }
+
+    @GetMapping("/debug/check-user")
+public ResponseEntity<?> checkUser(@RequestParam String email) {
+    Optional<UserEntity> user = userRepository.findByEmail(email);
+    
+    if (user.isEmpty()) {
+        return ResponseEntity.ok(Map.of("found", false, "email", email));
+    }
+    
+    UserEntity u = user.get();
+    return ResponseEntity.ok(Map.of(
+        "found", true,
+        "email", u.getEmail(),
+        "username", u.getUsername(),
+        "roles", u.getRoles(),
+        "passwordExists", u.getPassword() != null,
+        "passwordLength", u.getPassword().length()
+    ));
+}
 }
