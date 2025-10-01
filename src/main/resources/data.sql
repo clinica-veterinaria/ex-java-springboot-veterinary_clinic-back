@@ -37,7 +37,7 @@ VALUES
 -- =========================================
 -- APPOINTMENTS
 -- =========================================
-INSERT INTO appointments (appointment_datetime, patient_id, type, reason, status)
+INSERT IGNORE INTO appointments (appointment_datetime, patient_id, type, reason, status)
 VALUES
 ('2025-09-20 10:00:00', 1, 'STANDARD', 'Annual vaccination', 'PENDING'),
 ('2025-09-22 16:30:00', 2, 'STANDARD', 'General checkup', 'PENDING'),
@@ -46,7 +46,7 @@ VALUES
 -- =========================================
 -- TREATMENTS
 -- =========================================
-INSERT INTO treatments (patient_id, treatment, treatment_date)
+INSERT IGNORE INTO treatments (patient_id, treatment, treatment_date)
 VALUES
 (1, 'Rabies vaccine', '2025-01-15 10:00:00'),
 (1, 'Internal deworming', '2025-03-10 09:00:00'),
