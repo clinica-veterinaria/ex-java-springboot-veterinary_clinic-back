@@ -1,27 +1,38 @@
 -- =========================================
 -- ADMIN USER (BCrypt password)
 -- =========================================
--- Admin user (email: margarita@oliwa.com, password: admin123)
 INSERT INTO users (id, username, email, password, name, dni, phone)
 VALUES (1, 'margarita@oliwa.com', 'margarita@oliwa.com', 
         '$2a$10$w0Y.etYN84xCI2Rzb9kS9OuyiSG5PFNYAnGz0WQQfo3WpNtOr.HV.',
         'Margarita Admin', '12345678A', '666777888')
-ON DUPLICATE KEY UPDATE username=username;
+ON DUPLICATE KEY UPDATE 
+    username = VALUES(username),
+    email = VALUES(email),
+    password = VALUES(password),
+    name = VALUES(name),
+    dni = VALUES(dni),
+    phone = VALUES(phone);
 
 INSERT INTO user_roles (user_id, role)
-VALUES (1, 'ADMIN')
-ON DUPLICATE KEY UPDATE role=role;;
+VALUES (1, 'ROLE_ADMIN')
+ON DUPLICATE KEY UPDATE role = VALUES(role);
 
 -- Test user (email: user@test.com, password: user123)
 INSERT INTO users (id, username, email, password, name, dni, phone)
 VALUES (2, 'user@test.com', 'user@test.com', 
         '$2a$10$/mBzhZVa7WZV/38OTQ9tQ.CrTLRZaGOu1hTslst3NgTl9KeYhbIRa',
         'Usuario Prueba', '87654321B', '666888999')
-ON DUPLICATE KEY UPDATE username=username;
+ON DUPLICATE KEY UPDATE 
+    username = VALUES(username),
+    email = VALUES(email),
+    password = VALUES(password),
+    name = VALUES(name),
+    dni = VALUES(dni),
+    phone = VALUES(phone);
 
 INSERT INTO user_roles (user_id, role)
-VALUES (2, 'USER')
-ON DUPLICATE KEY UPDATE role=role;
+VALUES (2, 'ROLE_USER')
+ON DUPLICATE KEY UPDATE role = VALUES(role);
 
 
 -- =========================================

@@ -12,7 +12,6 @@ import org.digital_academy.user.dto.UserResponseDTO;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserService userService;

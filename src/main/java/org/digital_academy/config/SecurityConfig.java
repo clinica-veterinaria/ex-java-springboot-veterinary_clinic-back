@@ -1,25 +1,28 @@
 package org.digital_academy.config;
 
-import org.springframework.security.core.userdetails.User;
 import org.digital_academy.user.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
-@EnableMethodSecurity
+// @EnableMethodSecurity
 public class SecurityConfig {
     private final UserRepository userRepository;
 
@@ -27,58 +30,65 @@ public class SecurityConfig {
         this.userRepository = userRepository;
     }
 
-    // Bean para codificar contraseñas, necesario para AuthController
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Bean de AuthenticationManager para autenticación manual si es necesario
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return email -> userRepository.findByEmail(email)
-                .map(user -> User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities(user.getRoles().stream()
-                                .map(role -> "ROLE_" + role)
-                                .toArray(String[]::new))
-                        .build())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
-    }
+    // @Bean
+    // public UserDetailsService userDetailsService() {
+    //     return email -> userRepository.findByEmail(email)
+    //             .map(user -> {
+    //                 // DEBUG: Ver qué roles tiene el usuario
+    //                 System.out.println("=== DEBUG USER DETAILS SERVICE ===");
+    //                 System.out.println("🔍 Usuario: " + user.getEmail());
+    //                 System.out.println("🔍 Roles desde BD: " + user.getRoles());
+                    
+    //                 // Convertir roles a autoridades correctamente
+    //                 List<GrantedAuthority> authorities = user.getRoles().stream()
+    //                         .map(role -> {
+    //                             // Asegurar formato ROLE_XXX
+    //                             String authorityName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+    //                             System.out.println("🔍 Creando autoridad: " + authorityName);
+    //                             return new SimpleGrantedAuthority(authorityName);
+    //                         })
+    //                         .collect(Collectors.toList());
+                    
+    //                 System.out.println("🔍 Autoridades finales: " + authorities);
+    //                 System.out.println("=== FIN DEBUG ===");
+                    
+    //                 return org.springframework.security.core.userdetails.User
+    //                         .withUsername(user.getEmail())
+    //                         .password(user.getPassword())
+    //                         .authorities(authorities)
+    //                         .build();
+    //             })
+    //             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+    // }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService());
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
+    // @Bean
+    // public AuthenticationProvider authenticationProvider() {
+    //     // ✅ CORRECCIÓN: Pasar UserDetailsService al constructor
+    //     DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService());
+    //     provider.setPasswordEncoder(passwordEncoder());
+    //     return provider;
+    // }
 
-    // Configuración de seguridad unificada
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/error", "/test/**", "/appointments/**").permitAll()
-                        .requestMatchers("/appointments/**", "/treatments/**").hasAuthority("ADMIN")
-                        .requestMatchers("/patients/**").hasAnyAuthority("ADMIN", "USER")
-                        .anyRequest().authenticated())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .maximumSessions(1))
-                .authenticationProvider(authenticationProvider())
-                .formLogin(form -> form.disable())
-                .logout(logout -> logout.permitAll());
-
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configure(http))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll() // ← PERMITE TODO TEMPORALMENTE
+            );
+        
         return http.build();
     }
-
 }
