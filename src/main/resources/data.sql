@@ -4,7 +4,7 @@
 -- Admin user (email: margarita@oliwa.com, password: admin123)
 INSERT INTO users (id, username, email, password, name, dni, phone)
 VALUES (1, 'margarita@oliwa.com', 'margarita@oliwa.com', 
-        '$2a$10$w0Y.etYN84xCI2Rzb9kS9OuyiSG5PFNYAnGz0WQQfo3WpNtOr.HV.',
+        '$2a$10$7Q6c7A0VZyN1j8H8vwrNNOiKQqT7HcbMOnm.6Zbsz4PzZQGd1hY8e',
         'Margarita Admin', '12345678A', '666777888')
 ON DUPLICATE KEY UPDATE username=username;
 
@@ -15,7 +15,7 @@ ON DUPLICATE KEY UPDATE role=role;;
 -- Test user (email: user@test.com, password: user123)
 INSERT INTO users (id, username, email, password, name, dni, phone)
 VALUES (2, 'user@test.com', 'user@test.com', 
-        '$2a$10$/mBzhZVa7WZV/38OTQ9tQ.CrTLRZaGOu1hTslst3NgTl9KeYhbIRa',
+        '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
         'Usuario Prueba', '87654321B', '666888999')
 ON DUPLICATE KEY UPDATE username=username;
 
@@ -27,7 +27,7 @@ ON DUPLICATE KEY UPDATE role=role;
 -- =========================================
 -- PATIENTS
 -- =========================================
-INSERT INTO patients (name, age, breed, gender, pet_identification, tutor_name, tutor_dni, tutor_phone, tutor_email, image)
+INSERT IGNORE INTO patients (name, age, breed, gender, pet_identification, tutor_name, tutor_dni, tutor_phone, tutor_email, image)
 VALUES
 ('Luna', 5, 'Golden Retriever', 'FEMALE', 'PET123456', 'Ana Pérez', '12345678A', '600123456', 'paulafa8@gmail.com', NULL),
 ('Simba', 4, 'Siamese', 'MALE', 'PET654321', 'Carlos García', '87654321B', '600654321', 'carlos.garcia@gmail.com', NULL),
