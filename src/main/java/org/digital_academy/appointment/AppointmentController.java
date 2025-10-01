@@ -144,16 +144,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.mapToResponseDto(saved));
     }
 
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<AppointmentResponseDto> updateStatus(
-            @PathVariable Long id,
-            @RequestBody Map<String, String> statusPayload) {
-
-        String status = statusPayload.get("status");
-        AppointmentResponseDto updated = appointmentService.updateStatus(id, status);
-        return ResponseEntity.ok(updated);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiMessageDto> cancelAppointment(@PathVariable Long id) {
         boolean deleted = appointmentService.cancelAppointment(id);

@@ -220,6 +220,5 @@ public class AppointmentService {
             .tutorName(appointment.getPatient().getTutorName())
             .tutorEmail(appointment.getPatient().getTutorEmail())
             .build();
-}
-
+    }
 }
