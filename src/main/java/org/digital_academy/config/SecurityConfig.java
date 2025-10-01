@@ -1,5 +1,6 @@
 package org.digital_academy.config;
 
+import org.digital_academy.user.CustomUserDetailsService;
 import org.digital_academy.user.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +12,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,9 +20,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final UserRepository userRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(UserRepository userRepository) {
+    public SecurityConfig(UserRepository userRepository, CustomUserDetailsService customUserDetailsService) {
         this.userRepository = userRepository;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     // Bean para codificar contraseñas, necesario para AuthController
@@ -41,21 +41,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return email -> userRepository.findByEmail(email)
-                .map(user -> User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities(user.getRoles().stream()
-                                .map(role -> "ROLE_" + role)
-                                .toArray(String[]::new))
-                        .build())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
-    }
-
-    @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService());
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
