@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,8 +34,6 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final PatientRepository patientRepository;
 
-
-    
     @PostMapping
     public ResponseEntity<AppointmentResponseDto> createAppointment(
             @Valid @RequestBody AppointmentRequestDto request) {
@@ -88,15 +87,15 @@ public class AppointmentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-@GetMapping("/patient/{patientId}")
-public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@PathVariable Long patientId) {
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@PathVariable Long patientId) {
     List<AppointmentResponseDto> response = appointmentService.getAppointmentsByPatient(patientId).stream()
             .map(appointmentService::mapToResponseDto)
             .toList();
     return ResponseEntity.ok(response);
 }
 
- @GetMapping("/upcoming")
+    @GetMapping("/upcoming")
     public ResponseEntity<Map<String, List<AppointmentResponseDto>>> getUpcomingAppointments(@RequestParam(defaultValue = "3") int limit) {
         List<AppointmentResponseDto> upcomingAppointments = appointmentService.getUpcomingAppointments(limit).stream()
                 .map(appointmentService::mapToResponseDto)
@@ -143,6 +142,16 @@ public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByPatient(@Pa
 
         Appointment saved = appointmentService.updateAppointment(id, updated);
         return ResponseEntity.ok(appointmentService.mapToResponseDto(saved));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<AppointmentResponseDto> updateStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> statusPayload) {
+
+        String status = statusPayload.get("status");
+        AppointmentResponseDto updated = appointmentService.updateStatus(id, status);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
