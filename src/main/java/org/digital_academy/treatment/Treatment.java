@@ -19,19 +19,20 @@ public class Treatment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    // Relación con paciente
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
     @Column(name = "treatment", nullable = false)
-    private String treatment;   
+    private String treatment;
 
     @Column(name = "medication")
-    private String medication;  
+    private String medication;
 
     @Column(name = "dosage")
-    private Double dosage;      
+    private Double dosage;
 
     @Column(name = "treatment_date", nullable = false)
-    private LocalDateTime treatmentDate; 
+    private LocalDateTime treatmentDate;
 }
