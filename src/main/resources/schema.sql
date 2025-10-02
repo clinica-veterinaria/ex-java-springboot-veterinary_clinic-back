@@ -81,7 +81,6 @@ CREATE TABLE IF NOT EXISTS treatments (
 -- =========================================
 -- INDEXES
 -- =========================================
-CREATE INDEX idx_patients_pet_identification ON patients (pet_identification);
 CREATE INDEX idx_patients_tutor_name ON patients (tutor_name);
 CREATE INDEX idx_patients_tutor_dni ON patients (tutor_dni);
 CREATE INDEX idx_appointments_datetime ON appointments (appointment_datetime);
