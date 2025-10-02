@@ -25,17 +25,104 @@ Está desarrollado con **Java Spring Boot** y **MySQL**. Su propósito es ofrece
 
 ## 🗂️ Estructura de carpetas
 ```
-├── src/main/java/org/digital_academy/
-│   ├── appointment/
-│   ├── config/
-│   ├── patient/
-│   ├── treatment/
-│   ├── user/
-│   └── util/
-├── src/main/resources/
-│   ├── application.properties
-│   ├── data.sql
-│   └── schema.sql
+.
+├── mvnw
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── org
+│   │   │       ├── config
+│   │   │       │   └── CorsConfig.java
+│   │   │       └── digital_academy
+│   │   │           ├── appointment
+│   │   │           │   ├── dto
+│   │   │           │   │   ├── AppointmentRequestDto.java
+│   │   │           │   │   └── AppointmentResponseDto.java
+│   │   │           │   ├── Appointment.java
+│   │   │           │   ├── AppointmentController.java
+│   │   │           │   ├── AppointmentRepository.java
+│   │   │           │   └── AppointmentService.java
+│   │   │           ├── config
+│   │   │           │   └── SecurityConfig.java
+│   │   │           ├── implementation
+│   │   │           │   └── IPatientService.java
+│   │   │           ├── patient
+│   │   │           │   ├── dto
+│   │   │           │   │   ├── PatientRequestDTO.java
+│   │   │           │   │   └── PatientResponseDTO.java
+│   │   │           │   ├── InterfacePatientService.java
+│   │   │           │   ├── Patient.java
+│   │   │           │   ├── PatientController.java
+│   │   │           │   ├── PatientMapper.java
+│   │   │           │   ├── PatientRepository.java
+│   │   │           │   └── PatientService.java
+│   │   │           ├── treatment
+│   │   │           │   ├── dto
+│   │   │           │   │   ├── TreatmentRequestDTO.java
+│   │   │           │   │   └── TreatmentResponseDTO.java
+│   │   │           │   ├── Treatment.java
+│   │   │           │   ├── TreatmentController.java
+│   │   │           │   ├── TreatmentMapper.java
+│   │   │           │   └── TreatmentRepository.java
+│   │   │           ├── user
+│   │   │           │   ├── dto
+│   │   │           │   │   ├── UserRequestDTO.java
+│   │   │           │   │   └── UserResponseDTO.java
+│   │   │           │   ├── AuthController.java
+│   │   │           │   ├── CustomUserDetailsService.java
+│   │   │           │   ├── LoginRequest.java
+│   │   │           │   ├── RegisterRequest.java
+│   │   │           │   ├── UserController.java
+│   │   │           │   ├── UserEntity.java
+│   │   │           │   ├── UserRepository.java
+│   │   │           │   └── UserService.java
+│   │   │           ├── util
+│   │   │           │   ├── ApiMessageDto.java
+│   │   │           │   └── EmailService.java
+│   │   │           ├── ClinicaveterinariaApplication.java
+│   │   │           └── HomeController.java
+│   │   └── resources
+│   │       ├── static
+│   │       │   └── assets
+│   │       │       └── imgs
+│   │       │           └── Oliwa_LOGO.png
+│   │       ├── templates
+│   │       │   └── email
+│   │       │       ├── AppointmentCancellation.html
+│   │       │       ├── AppointmentConfirmation.html
+│   │       │       └── AppointmentUpdate.html
+│   │       ├── application.properties
+│   │       ├── data.sql
+│   │       └── schema.sql
+│   └── test
+│       └── java
+│           └── org
+│               └── digital_academy
+│                   ├── appointment
+│                   │   ├── AppointmentControllerTest.java
+│                   │   └── AppointmentServiceTest.java
+│                   ├── clinicaveterinaria
+│                   │   └── ClinicaveterinariaApplicationTests.java
+│                   ├── patient
+│                   │   ├── PatientControllerTest.java
+│                   │   ├── PatientMapperTest.java
+│                   │   └── PatientServiceTest.java
+│                   ├── treatment
+│                   │   ├── TreatmentControllerTest.java
+│                   │   └── TreatmentMapperTest.java
+│                   ├── user
+│                   │   ├── AuthControllerTest.java
+│                   │   ├── CustomUserDetailsServiceTest.java
+│                   │   ├── UserEntityTest.java
+│                   │   └── UserServiceTest.java
+│                   └── HomeControllerTest.java
+├── mvnw.cmd
+├── README.md
+├── tree.txt
+├── pom.xml
+├── compose.yaml
+└── application.yml
+
 ```
 
 ## Instalación y ejecución
